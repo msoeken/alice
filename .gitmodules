@@ -1,0 +1,12 @@
+[submodule "test/Catch2"]
+	path = test/Catch2
+	url = https://github.com/catchorg/Catch2.git
+[submodule "lib/fmt"]
+	path = lib/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "lib/CLI11"]
+	path = lib/CLI11
+	url = https://github.com/CLIUtils/CLI11.git
+[submodule "lib/variant"]
+	path = lib/variant
+	url = https://github.com/mpark/variant.git

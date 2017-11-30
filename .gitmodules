@@ -10,3 +10,6 @@
 [submodule "lib/variant"]
 	path = lib/variant
 	url = https://github.com/mpark/variant.git
+[submodule "lib/pybind11"]
+	path = lib/pybind11
+	url = https://github.com/pybind/pybind11.git

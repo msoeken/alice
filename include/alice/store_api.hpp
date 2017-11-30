@@ -92,9 +92,9 @@ logger::log_opt_t log_statistics( const StoreType& element )
 
 /*! \brief Controls whether a store entry can read from a specific format
 
-  If this function is override to return true, then also the
-  function read must be impemented for the same store element type
-  and format tag.
+  If this function is overriden to return true, then also the function
+  `read` must be impemented for the same store element type and format
+  tag.
 
   \param cmd Mutable reference to command, e.g., to add custom options
 */
@@ -106,7 +106,7 @@ bool can_read( command& cmd )
 
 /*! \brief Reads from a format and returns store element
 
-  This function must be enabled by overriding the can_read function
+  This function must be enabled by overriding the `can_read` function
   for the same store element type and format tag.
 
   \param filename Filename to read from
@@ -120,9 +120,9 @@ StoreType read( const std::string& filename, command& cmd )
 
 /*! \brief Controls whether a store entry can write to a specific format
 
-  If this function is override to return true, then also the function
-  write must be impemented for the same store element type and format
-  tag.
+  If this function is overriden to return true, then also the function
+  `write` must be impemented for the same store element type and
+  format tag.
 
   \param cmd Mutable reference to command, e.g., to add custom options
 */
@@ -134,7 +134,7 @@ bool can_write( command& cmd )
 
 /*! \brief Writes to a format and returns store element
 
-  This function must be enabled by overriding the can_write function
+  This function must be enabled by overriding the `can_write` function
   for the same store element type and format tag.
 
   \param element Store element to write
@@ -143,6 +143,31 @@ bool can_write( command& cmd )
 */
 template<typename StoreType, typename Tag>
 void write( const StoreType& element, const std::string& filename, command& cmd )
+{
+  throw std::runtime_error( "[e] unimplemented function" );
+}
+
+/*! \brief Controls whether a store entry can be converted to an entry of a different store type
+
+  If this function is overriden to return true, then also the function
+  `convert` must be implemented for the same store types.
+ */
+template<typename SourceStoreType, typename DestStoreType>
+bool can_convert()
+{
+  return false;
+}
+
+/*! \brief Converts a store entry into an entry of a different store type
+
+  This function must be enabled by overriding the `can_convert`
+  function for the same store element types.
+
+  \param element Store element to convert
+  \return Converted store element
+*/
+template<typename SourceStoreType, typename DestStoreType>
+DestStoreType convert( const SourceStoreType& element )
 {
   throw std::runtime_error( "[e] unimplemented function" );
 }

@@ -46,6 +46,7 @@
 #include "readline.hpp"
 
 #include "commands/alias.hpp"
+#include "commands/convert.hpp"
 #include "commands/current.hpp"
 #include "commands/help.hpp"
 #include "commands/print.hpp"
@@ -71,6 +72,7 @@ public:
 
     set_category( "General" );
     insert_command( "alias", std::make_shared<alias_command>( env ) );
+    insert_command( "convert", std::make_shared<convert_command<S...>>( env ) );
     insert_command( "current", std::make_shared<current_command<S...>>( env ) );
     insert_command( "help", std::make_shared<help_command>( env ) );
     insert_command( "print", std::make_shared<print_command<S...>>( env ) );

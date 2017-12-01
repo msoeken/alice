@@ -173,7 +173,7 @@ public:
 
     if ( ( !opts.count( "-c" ) && !opts.count( "-f" ) ) || ( !env->quit && opts.count( "-i" ) ) )
     {
-      readline rl( env );
+      readline_wrapper rl( env );
 
       std::string line;
       while ( !env->quit && rl.read_command_line( get_prefix(), line ) )

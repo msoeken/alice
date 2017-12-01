@@ -39,13 +39,103 @@
 #include "command.hpp"
 #include "detail/utils.hpp"
 
+#if defined READLINE_USE_READLINE
+
 namespace alice
 {
 
-class readline
+#include <readline/history.h>
+#include <readline/readline.h>
+
+class readline_wrapper
 {
 public:
-  readline( const environment::ptr& )
+  readline_wrapper( const environment::ptr& env )
+  {
+    instance = this;
+
+    for ( const auto& p : env->commands )
+    {
+      command_names.push_back( p.first );
+    }
+    rl_attempted_completion_function = readline_wrapper::readline_completion_s;
+  }
+
+  bool read_command_line( const std::string& prefix, std::string& line )
+  {
+    auto* cline = readline( prefix.c_str() );
+
+    /* something went wrong? */
+    if ( !cline )
+    {
+      return false;
+    }
+
+    line = cline;
+    detail::trim( line );
+    free( cline );
+
+    return true;
+  }
+
+  void add_to_history( const std::string& line )
+  {
+    add_history( line.c_str() );
+  }
+
+private:
+  static char** readline_completion_s( const char* text, int start, int end )
+  {
+    if ( start == 0 )
+    {
+      return rl_completion_matches( text, []( const char* text, int state ) { return instance->command_iterator( text, state ); } );
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+
+  char* command_iterator( const char* text, int state )
+  {
+    static std::vector<std::string>::const_iterator it;
+
+    if ( state == 0 )
+    {
+      it = command_names.begin();
+    }
+
+    while ( it != command_names.end() )
+    {
+      const auto& name = *it++;
+      if ( name.find( text ) != std::string::npos )
+      {
+        char* completion = new char[name.size()];
+        strcpy( completion, name.c_str() );
+        return completion;
+      }
+    }
+
+    return nullptr;
+  }
+
+private:
+  static readline_wrapper* instance;
+  std::vector<std::string> command_names;
+};
+
+readline_wrapper* readline_wrapper::instance = nullptr;
+}
+
+#else
+
+namespace alice
+{
+
+class readline_wrapper
+{
+public:
+  readline_wrapper( const environment::ptr& )
   {
   }
 
@@ -67,3 +157,5 @@ public:
   }
 };
 }
+
+#endif

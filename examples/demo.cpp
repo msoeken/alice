@@ -26,44 +26,39 @@
 #include <alice/alice.hpp>
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
+#include <typeinfo>
 
+#include <boost/hana/type.hpp>
 #include <fmt/format.h>
 
 namespace alice
 {
 
+ALICE_INIT
+
 /* setup string store */
-template<>
-struct store_info<std::string>
-{
-  static constexpr const char* key = "string";
-  static constexpr const char* option = "str";
-  static constexpr const char* mnemonic = "s";
-  static constexpr const char* name = "String";
-  static constexpr const char* name_plural = "Strings";
-};
+ALICE_ADD_STORE( std::string, "str", "s", "String", "Strings" )
 
-struct io_text_tag_t;
-
-template<>
-std::string to_string<std::string>( const std::string& element )
+/* small description printed for `store -s` */
+ALICE_DESCRIBE_STORE( std::string, element )
 {
   return fmt::format( "{} characters", element.size() );
 }
 
-template<>
-void print<std::string>( std::ostream& out, const std::string& element )
+/* text printed when calling `print -s` */
+ALICE_PRINT_STORE( std::string, os, element )
 {
-  out << element << std::endl;
+  os << element << std::endl;
 }
 
-template<>
-bool can_read<std::string, io_text_tag_t>( command& ) { return true; }
+/* register a new file type to read from and write to */
+ALICE_ADD_FILE_TYPE( text )
 
-template<>
-std::string read<std::string, io_text_tag_t>( const std::string& filename, command& )
+/* read from file into string */
+ALICE_READ_FILE( std::string, text, filename, cmd )
 {
   std::ifstream in( filename.c_str(), std::ifstream::in );
   std::stringstream buffer;
@@ -71,11 +66,8 @@ std::string read<std::string, io_text_tag_t>( const std::string& filename, comma
   return buffer.str();
 }
 
-template<>
-bool can_write<std::string, io_text_tag_t>( command& ) { return true; }
-
-template<>
-void write<std::string, io_text_tag_t>( const std::string& element, const std::string& filename, command& )
+/* write from string into file */
+ALICE_WRITE_FILE( std::string, text, element, filename, cmd )
 {
   std::ofstream out( filename.c_str(), std::ofstream::out );
   out << element;
@@ -84,7 +76,11 @@ void write<std::string, io_text_tag_t>( const std::string& element, const std::s
 
 int main( int argc, char** argv )
 {
-  alice::cli<std::string> cli( "demo" );
+  using namespace alice;
+
+  _ALICE_END_LIST( alice_stores )
+  using cli_t = decltype( boost::hana::unpack( list_to_tuple<alice_stores>::type, boost::hana::template_<alice::cli> ) )::type;
+  cli_t cli( "demo" );
 
   cli.set_category( "I/O" );
   cli.insert_read_command<alice::io_text_tag_t>( "read_text", "Text" );

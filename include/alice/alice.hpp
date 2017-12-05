@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include "api.hpp"
 #include "cli.hpp"
 #include "command.hpp"
 #include "logging.hpp"

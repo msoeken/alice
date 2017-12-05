@@ -23,3 +23,10 @@ int main() { return 0; }
     message(WARNING "Cannot find readline library, fall back to native interface.")
   endif()
 endif()
+
+# disable some warnings
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-Wno-unneeded-internal-declaration" HAS_NO_UNNEEDED_INTERNAL_DECLARATION)
+if (HAS_NO_UNNEEDED_INTERNAL_DECLARATION)
+  target_compile_options(alice INTERFACE "-Wno-unneeded-internal-declaration")
+endif()

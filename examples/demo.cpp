@@ -31,11 +31,6 @@
 #include <string>
 #include <typeinfo>
 
-#include <boost/hana/for_each.hpp>
-#include <boost/hana/integral_constant.hpp>
-#include <boost/hana/range.hpp>
-#include <boost/hana/size.hpp>
-#include <boost/hana/type.hpp>
 #include <fmt/format.h>
 
 namespace alice

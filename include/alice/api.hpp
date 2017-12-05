@@ -35,7 +35,11 @@
 #include <string>
 #include <vector>
 
+#include <boost/hana/for_each.hpp>
+#include <boost/hana/integral_constant.hpp>
 #include <boost/hana/prepend.hpp>
+#include <boost/hana/range.hpp>
+#include <boost/hana/size.hpp>
 #include <boost/hana/tuple.hpp>
 #include <boost/hana/type.hpp>
 

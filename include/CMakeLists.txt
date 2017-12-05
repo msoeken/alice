@@ -3,6 +3,7 @@ target_include_directories(alice INTERFACE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(alice INTERFACE fmt::fmt-header-only)
 target_link_libraries(alice INTERFACE CLI11)
 target_link_libraries(alice INTERFACE mpark_variant)
+target_link_libraries(alice INTERFACE hana)
 
 if(ALICE_READLINE_LIBRARY STREQUAL "READLINE")
   include(CheckCXXSourceRuns)

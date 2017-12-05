@@ -1,3 +1,4 @@
 add_subdirectory(fmt EXCLUDE_FROM_ALL)
 add_subdirectory(CLI11 EXCLUDE_FROM_ALL)
 add_subdirectory(variant EXCLUDE_FROM_ALL)
+add_subdirectory(hana EXCLUDE_FROM_ALL)

@@ -31,6 +31,10 @@
 #include <string>
 #include <typeinfo>
 
+#include <boost/hana/for_each.hpp>
+#include <boost/hana/integral_constant.hpp>
+#include <boost/hana/range.hpp>
+#include <boost/hana/size.hpp>
 #include <boost/hana/type.hpp>
 #include <fmt/format.h>
 
@@ -55,7 +59,7 @@ ALICE_PRINT_STORE( std::string, os, element )
 }
 
 /* register a new file type to read from and write to */
-ALICE_ADD_FILE_TYPE( text )
+ALICE_ADD_FILE_TYPE( text, "Text" )
 
 /* read from file into string */
 ALICE_READ_FILE( std::string, text, filename, cmd )
@@ -72,19 +76,7 @@ ALICE_WRITE_FILE( std::string, text, element, filename, cmd )
   std::ofstream out( filename.c_str(), std::ofstream::out );
   out << element;
 }
+
 }
 
-int main( int argc, char** argv )
-{
-  using namespace alice;
-
-  _ALICE_END_LIST( alice_stores )
-  using cli_t = decltype( boost::hana::unpack( list_to_tuple<alice_stores>::type, boost::hana::template_<alice::cli> ) )::type;
-  cli_t cli( "demo" );
-
-  cli.set_category( "I/O" );
-  cli.insert_read_command<alice::io_text_tag_t>( "read_text", "Text" );
-  cli.insert_write_command<alice::io_text_tag_t>( "write_text", "Text" );
-
-  return cli.run( argc, argv );
-}
+ALICE_MAIN(demo)

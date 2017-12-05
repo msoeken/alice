@@ -32,9 +32,14 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include <boost/hana/prepend.hpp>
 #include <boost/hana/tuple.hpp>
 #include <boost/hana/type.hpp>
+
+#include <fmt/format.h>
 
 namespace alice
 {
@@ -105,6 +110,73 @@ struct store_info<type> \
 }; \
 _ALICE_ADD_TO_LIST(alice_stores, type)
 
+/* some global data structure */
+struct alice_globals
+{
+  static alice_globals& get()
+  {
+    static alice_globals instance;
+    return instance;
+  }
+
+  std::vector<std::string> read_tags, write_tags;
+  std::vector<std::string> read_names, write_names;
+};
+
+template<typename CLI, typename... Tags>
+struct insert_read_commands
+{
+  /* constructor stores reference to CLI instance */
+  insert_read_commands( CLI& cli ) : _cli( cli )
+  {
+    cli.set_category( "I/O" );
+  }
+
+  template<typename... StringPairs>
+  void operator()( StringPairs... s )
+  {
+    []( ... ){}( apply<CLI, Tags>( _cli, s )... );
+  }
+
+private:
+  template<typename CCLI, typename T>
+  static int apply( CCLI& cli, std::size_t idx )
+  {
+    cli.template insert_read_command<T>( fmt::format( "read_{}", alice_globals::get().read_tags[idx] ), alice_globals::get().read_names[idx] );
+    return 0;
+  }
+
+private:
+  CLI& _cli;  
+};
+
+template<typename CLI, typename... Tags>
+struct insert_write_commands
+{
+  /* constructor stores reference to CLI instance */
+  insert_write_commands( CLI& cli ) : _cli( cli )
+  {
+    cli.set_category( "I/O" );
+  }
+
+  template<typename... StringPairs>
+  void operator()( StringPairs... s )
+  {
+    []( ... ){}( apply<CLI, Tags>( _cli, s )... );
+  }
+
+private:
+  template<typename CCLI, typename T>
+  static int apply( CCLI& cli, std::size_t idx )
+  {
+    cli.template insert_write_command<T>( fmt::format( "write_{}", alice_globals::get().write_tags[idx] ), alice_globals::get().write_names[idx] );
+    return 0;
+  }
+
+private:
+  CLI& _cli;  
+};
+
 #define ALICE_DESCRIBE_STORE(type, element) \
 template<> \
 std::string to_string<std::string>( const type& element )
@@ -125,9 +197,74 @@ bool can_write<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
 template<> \
 void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, command& cmd )
 
-#define ALICE_ADD_FILE_TYPE(tag) \
-struct io_##tag##_tag_t;
+#define ALICE_ADD_FILE_TYPE(tag, name) \
+struct io_##tag##_tag_t \
+{ \
+  io_##tag##_tag_t() \
+  { \
+    alice_globals::get().read_tags.push_back(#tag); \
+    alice_globals::get().read_names.push_back(name); \
+    alice_globals::get().write_tags.push_back(#tag); \
+    alice_globals::get().write_names.push_back(name); \
+  } \
+}; \
+io_##tag##_tag_t _##tag##_tag; \
+_ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t) \
+_ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
 
-#define ALICE_INIT _ALICE_START_LIST(alice_stores)
+#define ALICE_ADD_FILE_TYPE_READ_ONLY(tag, name) \
+struct io_##tag##_tag_t \
+{ \
+  io_##tag##_tag_t() \
+  { \
+    alice_globals::get().read_tags.push_back(#tag); \
+    alice_globals::get().read_names.push_back(name); \
+  } \
+}; \
+io_##tag##_tag_t _##tag##_tag; \
+_ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t)
+
+#define ALICE_ADD_FILE_TYPE_WRITE_ONLY(tag, name) \
+struct io_##tag##_tag_t \
+{ \
+  io_##tag##_tag_t() \
+  { \
+    alice_globals::get().write_tags.push_back(#tag); \
+    alice_globals::get().write_names.push_back(name); \
+  } \
+}; \
+io_##tag##_tag_t _##tag##_tag; \
+_ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
+
+#define ALICE_INIT \
+_ALICE_START_LIST(alice_stores) \
+_ALICE_START_LIST(alice_read_tags) \
+_ALICE_START_LIST(alice_write_tags)
+
+#define ALICE_MAIN(prefix) \
+int main( int argc, char ** argv ) \
+{ \
+  using namespace alice; \
+  _ALICE_END_LIST( alice_stores ) \
+  _ALICE_END_LIST( alice_read_tags ) \
+  _ALICE_END_LIST( alice_write_tags ) \
+  \
+  using cli_t = decltype( boost::hana::unpack( list_to_tuple<alice_stores>::type, boost::hana::template_<alice::cli> ) )::type; \
+  cli_t cli( #prefix ); \
+  \
+  constexpr auto rtags = list_to_tuple<alice_read_tags>::type; \
+  constexpr auto rtags_with_cli = boost::hana::prepend( rtags, boost::hana::type_c<cli_t> ); \
+  using insert_read_commands_t = decltype( boost::hana::unpack( rtags_with_cli, boost::hana::template_<insert_read_commands> ) )::type; \
+  insert_read_commands_t irc( cli ); \
+  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( rtags ) ), irc ); \
+  \
+  constexpr auto wtags = list_to_tuple<alice_write_tags>::type; \
+  constexpr auto wtags_with_cli = boost::hana::prepend( wtags, boost::hana::type_c<cli_t> ); \
+  using insert_write_commands_t = decltype( boost::hana::unpack( wtags_with_cli, boost::hana::template_<insert_write_commands> ) )::type; \
+  insert_write_commands_t iwc( cli ); \
+  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( wtags ) ), iwc ); \
+  \
+  return cli.run( argc, argv ); \
+}
 
 }

@@ -29,7 +29,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <typeinfo>
 
 #include <fmt/format.h>
 

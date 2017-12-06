@@ -1,4 +1,4 @@
-/* alice: C++ REPL library
+/* alice: C++ command shell library
  * Copyright (C) 2017  EPFL
  *
  * Permission is hereby granted, free of charge, to any person

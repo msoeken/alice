@@ -1,4 +1,4 @@
-/* alice: C++ REPL library
+/* alice: C++ command shell library
  * Copyright (C) 2017  EPFL
  *
  * Permission is hereby granted, free of charge, to any person
@@ -154,10 +154,11 @@ public:
 
     The current element is set to the added store element.
   */
-  void extend()
+  T& extend()
   {
     _current = _data.size();
     _data.push_back( T() );
+    return _data.back();
   }
 
   /*! \brief Clears all elements in the store

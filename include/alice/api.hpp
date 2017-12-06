@@ -45,6 +45,8 @@
 
 #include <fmt/format.h>
 
+#include "detail/python.hpp"
+
 namespace alice
 {
 
@@ -274,7 +276,7 @@ struct name##_command_init \
 { \
   name##_command_init() \
   { \
-    alice_globals::get().command_names.emplace_back(#name, #category); \
+    alice_globals::get().command_names.emplace_back(#name, category); \
   } \
 }; \
 name##_command_init _##name##_command_init; \
@@ -295,9 +297,7 @@ _ALICE_START_LIST( alice_commands ) \
 _ALICE_START_LIST( alice_read_tags ) \
 _ALICE_START_LIST( alice_write_tags )
 
-#define ALICE_MAIN(prefix) \
-int main( int argc, char ** argv ) \
-{ \
+#define _ALICE_MAIN_BODY(prefix) \
   using namespace alice; \
   _ALICE_END_LIST( alice_stores ) \
   _ALICE_END_LIST( alice_commands ) \
@@ -323,10 +323,23 @@ int main( int argc, char ** argv ) \
   constexpr auto ctags_with_cli = boost::hana::prepend( ctags, boost::hana::type_c<cli_t> ); \
   using insert_commands_t = decltype( boost::hana::unpack( ctags_with_cli, boost::hana::template_<insert_commands> ) )::type; \
   insert_commands_t ic( cli ); \
-  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( ctags ) ), ic ); \
-  \
+  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( ctags ) ), ic );
+
+#if defined ALICE_PYTHON
+#define ALICE_MAIN(prefix) \
+PYBIND11_MODULE(prefix, m) \
+{ \
+  _ALICE_MAIN_BODY(prefix) \
+  alice::detail::create_python_module( cli, m ); \
+}
+#else
+#define ALICE_MAIN(prefix) \
+int main( int argc, char ** argv ) \
+{ \
+  _ALICE_MAIN_BODY(prefix) \
   return cli.run( argc, argv ); \
 }
+#endif
 
 ALICE_INIT
 

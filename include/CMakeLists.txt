@@ -1,9 +1,16 @@
+# library for stand-alone executables
 add_library(alice INTERFACE)
 target_include_directories(alice INTERFACE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(alice INTERFACE fmt::fmt-header-only)
 target_link_libraries(alice INTERFACE CLI11)
 target_link_libraries(alice INTERFACE mpark_variant)
 target_link_libraries(alice INTERFACE hana)
+
+# library for Python bindings
+add_library(alice_python INTERFACE)
+target_link_libraries(alice_python INTERFACE alice)
+target_compile_definitions(alice_python INTERFACE ALICE_PYTHON)
+target_link_libraries(alice_python INTERFACE pybind11::module)
 
 if(ALICE_READLINE_LIBRARY STREQUAL "READLINE")
   include(CheckCXXSourceRuns)

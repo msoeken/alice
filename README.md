@@ -25,12 +25,16 @@ ALICE_COMMAND(hello, "Generation", "adds a welcome string to the store")
 {
   auto& strings = env->store<std::string>();
   strings.extend() = "hello world";
+
+  return true;
 }
 
 ALICE_COMMAND(upper, "Manipulation", "changes string to upper bound")
 {
   auto& str = env->store<std::string>().current();
-  std::transform( str.begin(), str.end(), str.begin(), std::toupper );
+  std::transform( str.begin(), str.end(), str.begin(), ::toupper );
+
+  return true;
 }
 
 }
@@ -51,6 +55,7 @@ HELLO WORLD
 demo> current -s 0
 demo> print -s
 hello world
+demo> quit
 ```
 
 We can use the very same code to compile it into a Python library instead of an executable, allowing us to call the commands as Python methods.  For example:

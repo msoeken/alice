@@ -25,6 +25,7 @@
 
 #include <alice/alice.hpp>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -69,10 +70,19 @@ ALICE_WRITE_FILE( std::string, text, element, filename, cmd )
   out << element;
 }
 
-ALICE_COMMAND( hello, "Demo", "Prints hello" )
+ALICE_COMMAND(hello, "Generation", "adds a welcome string to the store")
 {
-  std::cout << "hello" << std::endl;
-  
+  auto& strings = env->store<std::string>();
+  strings.extend() = "hello world";
+
+  return true;
+}
+
+ALICE_COMMAND(upper, "Manipulation", "changes string to upper bound")
+{
+  auto& str = env->store<std::string>().current();
+  std::transform( str.begin(), str.end(), str.begin(), ::toupper );
+
   return true;
 }
 

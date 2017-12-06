@@ -7,3 +7,7 @@ function(add_example name)
 endfunction()
 
 add_example(demo)
+
+# tutorial 1
+add_executable(tutorial1 tutorial1/tutorial1.cpp)
+target_link_libraries(tutorial1 alice)

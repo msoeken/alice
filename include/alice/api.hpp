@@ -123,6 +123,7 @@ struct alice_globals
     return instance;
   }
 
+  std::vector<std::pair<std::string, std::string>> command_names;
   std::vector<std::string> read_tags, write_tags;
   std::vector<std::string> read_names, write_names;
 };
@@ -136,8 +137,8 @@ struct insert_read_commands
     cli.set_category( "I/O" );
   }
 
-  template<typename... StringPairs>
-  void operator()( StringPairs... s )
+  template<typename... Indexes>
+  void operator()( Indexes... s )
   {
     []( ... ){}( apply<CLI, Tags>( _cli, s )... );
   }
@@ -163,8 +164,8 @@ struct insert_write_commands
     cli.set_category( "I/O" );
   }
 
-  template<typename... StringPairs>
-  void operator()( StringPairs... s )
+  template<typename... Indexes>
+  void operator()( Indexes... s )
   {
     []( ... ){}( apply<CLI, Tags>( _cli, s )... );
   }
@@ -240,16 +241,66 @@ struct io_##tag##_tag_t \
 io_##tag##_tag_t _##tag##_tag; \
 _ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
 
+////////////////////////////////////////////////////////////////////////////////
+// commands
+
+template<typename CLI, typename... Cmds>
+struct insert_commands
+{
+  /* constructor stores reference to CLI instance */
+  insert_commands( CLI& cli ) : _cli( cli ) {}
+
+  template<typename... Indexes>
+  void operator()( Indexes... s )
+  {
+    []( ... ){}( apply<CLI, Cmds>( _cli, s )... );
+  }
+
+private:
+  template<typename CCLI, typename T>
+  static int apply( CCLI& cli, std::size_t idx )
+  {
+    cli.set_category( alice_globals::get().command_names[idx].second );
+    cli.insert_command( alice_globals::get().command_names[idx].first, std::make_shared<T>( cli.env ) );
+    return 0;
+  }
+
+private:
+  CLI& _cli;  
+};
+
+#define ALICE_COMMAND(name, category, description) \
+struct name##_command_init \
+{ \
+  name##_command_init() \
+  { \
+    alice_globals::get().command_names.emplace_back(#name, #category); \
+  } \
+}; \
+name##_command_init _##name##_command_init; \
+class name##_command; \
+_ALICE_ADD_TO_LIST(alice_commands, name##_command) \
+class name##_command : public command \
+{ \
+public: \
+  name##_command( const environment::ptr& env ) : command( env, description ) {} \
+protected: \
+  bool execute(); \
+}; \
+bool name##_command::execute()
+
 #define ALICE_INIT \
-_ALICE_START_LIST(alice_stores) \
-_ALICE_START_LIST(alice_read_tags) \
-_ALICE_START_LIST(alice_write_tags)
+_ALICE_START_LIST( alice_stores ) \
+_ALICE_START_LIST( alice_commands ) \
+_ALICE_START_LIST( alice_read_tags ) \
+_ALICE_START_LIST( alice_write_tags )
 
 #define ALICE_MAIN(prefix) \
 int main( int argc, char ** argv ) \
 { \
   using namespace alice; \
   _ALICE_END_LIST( alice_stores ) \
+  _ALICE_END_LIST( alice_commands ) \
   _ALICE_END_LIST( alice_read_tags ) \
   _ALICE_END_LIST( alice_write_tags ) \
   \
@@ -268,7 +319,15 @@ int main( int argc, char ** argv ) \
   insert_write_commands_t iwc( cli ); \
   boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( wtags ) ), iwc ); \
   \
+  constexpr auto ctags = list_to_tuple<alice_commands>::type; \
+  constexpr auto ctags_with_cli = boost::hana::prepend( ctags, boost::hana::type_c<cli_t> ); \
+  using insert_commands_t = decltype( boost::hana::unpack( ctags_with_cli, boost::hana::template_<insert_commands> ) )::type; \
+  insert_commands_t ic( cli ); \
+  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( ctags ) ), ic ); \
+  \
   return cli.run( argc, argv ); \
 }
+
+ALICE_INIT
 
 }

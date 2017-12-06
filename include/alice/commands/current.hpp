@@ -66,7 +66,7 @@ protected:
   {
     rules_t rules;
 
-    rules.push_back( {[this]() { return exactly_one_true_helper( {is_set( store_info<S>::option )...} ); }, "exactly one store needs to be specified"} );
+    rules.push_back( {[this]() { return exactly_one_true_helper<bool>( {is_set( store_info<S>::option )...} ); }, "exactly one store needs to be specified"} );
 
     return rules;
   }

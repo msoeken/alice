@@ -72,13 +72,17 @@ public:
 
     set_category( "General" );
     insert_command( "alias", std::make_shared<alias_command>( env ) );
-    insert_command( "convert", std::make_shared<convert_command<S...>>( env ) );
-    insert_command( "current", std::make_shared<current_command<S...>>( env ) );
     insert_command( "help", std::make_shared<help_command>( env ) );
-    insert_command( "print", std::make_shared<print_command<S...>>( env ) );
-    insert_command( "ps", std::make_shared<ps_command<S...>>( env ) );
     insert_command( "quit", std::make_shared<quit_command>( env ) );
-    insert_command( "store", std::make_shared<store_command<S...>>( env ) );
+
+    if ( sizeof...( S ) )
+    {
+      insert_command( "convert", std::make_shared<convert_command<S...>>( env ) );
+      insert_command( "current", std::make_shared<current_command<S...>>( env ) );
+      insert_command( "print", std::make_shared<print_command<S...>>( env ) );
+      insert_command( "ps", std::make_shared<ps_command<S...>>( env ) );
+      insert_command( "store", std::make_shared<store_command<S...>>( env ) );
+    }
 
     opts.add_option( "-c,--command", command, "process semicolon-separated list of commands" );
     opts.add_option( "-f,--flag", file, "process file with new-line separated list of commands" );

@@ -100,7 +100,7 @@ protected:
   rules_t validity_rules() const
   {
     return {
-        {[this]() { return exactly_one_true_helper( {is_set( store_info<S>::option )...} ); }, "exactly one store needs to be specified"}};
+        {[this]() { return exactly_one_true_helper<bool>( {is_set( store_info<S>::option )...} ); }, "exactly one store needs to be specified"}};
   }
 
   bool execute()

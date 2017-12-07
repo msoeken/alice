@@ -13,3 +13,7 @@ add_alice_python_module(demo demo.cpp)
 # tutorial 1
 add_executable(tutorial1 tutorial1/tutorial1.cpp)
 target_link_libraries(tutorial1 alice)
+
+# tutorial 2
+add_executable(tutorial2 tutorial2/tutorial2.cpp)
+target_link_libraries(tutorial2 alice)

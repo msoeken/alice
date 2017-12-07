@@ -41,7 +41,7 @@
 
 namespace alice
 {
-std::string process_filename( const std::string& filename )
+inline std::string process_filename( const std::string& filename )
 {
   std::string result;
 

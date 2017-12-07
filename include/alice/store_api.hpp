@@ -55,6 +55,7 @@ struct store_info
 template<typename StoreType>
 std::string to_string( const StoreType& element )
 {
+  (void)element;
   return "";
 }
 
@@ -68,6 +69,7 @@ std::string to_string( const StoreType& element )
 template<typename StoreType>
 void print( std::ostream& out, const StoreType& element )
 {
+  (void)element;
   out << std::endl;
 }
 
@@ -81,12 +83,20 @@ void print( std::ostream& out, const StoreType& element )
 template<typename StoreType>
 void print_statistics( std::ostream& out, const StoreType& element )
 {
+  (void)element;
   out << std::endl;
 }
 
+/*! \brief Statistics to log when calling `ps`
+
+  This routine is called by the `ps` command, if logging is enabled.
+
+  \param element Store element
+*/
 template<typename StoreType>
 logger::log_opt_t log_statistics( const StoreType& element )
 {
+  (void)element;
   return logger::log_opt_t();
 }
 
@@ -101,6 +111,7 @@ logger::log_opt_t log_statistics( const StoreType& element )
 template<typename StoreType, typename Tag>
 bool can_read( command& cmd )
 {
+  (void)cmd;
   return false;
 }
 
@@ -115,6 +126,8 @@ bool can_read( command& cmd )
 template<typename StoreType, typename Tag>
 StoreType read( const std::string& filename, command& cmd )
 {
+  (void)filename;
+  (void)cmd;
   throw std::runtime_error( "[e] unimplemented function" );
 }
 
@@ -129,6 +142,7 @@ StoreType read( const std::string& filename, command& cmd )
 template<typename StoreType, typename Tag>
 bool can_write( command& cmd )
 {
+  (void)cmd;
   return false;
 }
 
@@ -144,6 +158,9 @@ bool can_write( command& cmd )
 template<typename StoreType, typename Tag>
 void write( const StoreType& element, const std::string& filename, command& cmd )
 {
+  (void)element;
+  (void)filename;
+  (void)cmd;
   throw std::runtime_error( "[e] unimplemented function" );
 }
 
@@ -169,6 +186,7 @@ bool can_convert()
 template<typename SourceStoreType, typename DestStoreType>
 DestStoreType convert( const SourceStoreType& element )
 {
+  (void)element;
   throw std::runtime_error( "[e] unimplemented function" );
 }
 }

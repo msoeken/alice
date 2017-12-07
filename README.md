@@ -23,13 +23,13 @@ ALICE_PRINT_STORE(std::string, os, element)
 
 ALICE_COMMAND(hello, "Generation", "adds a welcome string to the store")
 {
-  auto& strings = env->store<std::string>();
+  auto& strings = store<std::string>();
   strings.extend() = "hello world";
 }
 
 ALICE_COMMAND(upper, "Manipulation", "changes string to upper bound")
 {
-  auto& str = env->store<std::string>().current();
+  auto& str = store<std::string>().current();
   std::transform( str.begin(), str.end(), str.begin(), ::toupper );
 }
 

@@ -103,14 +103,12 @@ protected:
         {[this]() { return exactly_one_true_helper<bool>( {is_set( store_info<S>::option )...} ); }, "exactly one store needs to be specified"}};
   }
 
-  bool execute()
+  void execute()
   {
     //TODO
     //#ifndef ALICE_PYTHON
     []( ... ) {}( print_helper<S>( *this, env )... );
     //#endif
-
-    return true;
   }
 
   // TODO

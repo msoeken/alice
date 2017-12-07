@@ -160,7 +160,8 @@ public:
       }
     }
 
-    return execute();
+    execute();
+    return true;
   }
 
   inline bool is_set( const std::string& option ) const
@@ -183,7 +184,7 @@ public:
 
 protected:
   virtual rules_t validity_rules() const { return {}; }
-  virtual bool execute() = 0;
+  virtual void execute() = 0;
 
 public:
   virtual log_opt_t log() const { return log_opt_t(); }

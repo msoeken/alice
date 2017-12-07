@@ -287,9 +287,9 @@ class name##_command : public command \
 public: \
   name##_command( const environment::ptr& env ) : command( env, description ) {} \
 protected: \
-  bool execute(); \
+  void execute(); \
 }; \
-bool name##_command::execute()
+void name##_command::execute()
 
 #define ALICE_INIT \
 _ALICE_START_LIST( alice_stores ) \

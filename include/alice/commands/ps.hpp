@@ -100,14 +100,12 @@ protected:
     };
   }
 
-  bool execute()
+  void execute()
   {
     if ( !is_set( "silent" ) )
     {
       [](...){}( ps_helper<S>( *this, env )... );
     }
-
-    return true;
   }
 
 public:

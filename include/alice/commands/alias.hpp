@@ -48,10 +48,9 @@ public:
   }
 
 protected:
-  bool execute()
+  void execute()
   {
     env->aliases[alias] = expansion;
-    return true;
   }
 
 private:

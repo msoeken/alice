@@ -121,11 +121,9 @@ protected:
     return rules;
   }
 
-  bool execute()
+  void execute()
   {
     []( ... ) {}( read_io_helper<Tag, S>( *this, default_option, env, process_filename( filename ) )... );
-
-    return true;
   }
 
 private:

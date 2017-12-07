@@ -71,11 +71,9 @@ protected:
     return rules;
   }
 
-  bool execute()
+  void execute()
   {
     []( ... ) {}( set_current_index_helper<S>( *this, env, index )... );
-
-    return true;
   }
 
 private:

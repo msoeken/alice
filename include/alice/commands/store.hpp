@@ -116,7 +116,7 @@ protected:
         {[this]() { return any_true_helper<bool>( {is_set( store_info<S>::option )...} ); }, "no store has been specified"}};
   }
 
-  bool execute()
+  void execute()
   {
     if ( is_set( "show" ) || !is_set( "clear" ) )
     {
@@ -126,8 +126,6 @@ protected:
     {
       []( ... ) {}( clear_helper<S>( *this, env )... );
     }
-
-    return true;
   }
 
   log_opt_t log() const

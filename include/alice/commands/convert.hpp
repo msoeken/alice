@@ -106,10 +106,9 @@ public:
   }
 
 protected:
-  bool execute()
+  void execute()
   {
     []( ... ) {}( convert_helper<S, S...>( env, *this )... );
-    return true;
   }
 };
 }

@@ -48,10 +48,9 @@ public:
       : command( env, "Quits the program" ) {}
 
 protected:
-  bool execute()
+  void execute()
   {
     env->quit = true;
-    return true;
   }
 
 public:

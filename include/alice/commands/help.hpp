@@ -52,7 +52,7 @@ public:
   }
 
 protected:
-  bool execute()
+  void execute()
   {
     if ( is_set( "-s" ) )
     {
@@ -62,8 +62,6 @@ protected:
     {
       print_commands();
     }
-
-    return true;
   }
 
 private:

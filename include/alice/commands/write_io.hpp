@@ -102,11 +102,9 @@ protected:
     return rules;
   }
 
-  bool execute()
+  void execute()
   {
     []( ... ) {}( write_io_helper<Tag, S>( *this, default_option, env, filename )... );
-
-    return true;
   }
 
 private:

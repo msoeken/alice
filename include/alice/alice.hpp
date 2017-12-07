@@ -32,7 +32,9 @@
 
 #pragma once
 
+#if !defined(ALICE_NOAPI)
 #include "api.hpp"
+#endif
 #include "cli.hpp"
 #include "command.hpp"
 #include "logging.hpp"

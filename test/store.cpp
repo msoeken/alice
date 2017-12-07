@@ -6,7 +6,7 @@ using namespace alice;
 
 TEST_CASE("Basic store operations", "[store]")
 {
-  store<std::string> s( "name" );
+  store_container<std::string> s( "name" );
 
   CHECK_THROWS_WITH( s.current(), "[e] no current name available" );
   CHECK_THROWS( *s );

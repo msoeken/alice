@@ -34,7 +34,7 @@ ALICE_ADD_STORE( std::string, "str", "s", "String", "Strings" )
 
 ALICE_COMMAND( hello, "Generation", "Generates a welcome string" )
 {
-  env->store<std::string>().current() = "hello world";
+  store<std::string>().current() = "hello world";
 }
 
 }

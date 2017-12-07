@@ -66,16 +66,16 @@ public:
     constexpr auto key = store_info<T>::key;
     constexpr auto name = store_info<T>::name;
 
-    stores.emplace( key, std::shared_ptr<void>( new alice::store<T>( name ) ) );
+    stores.emplace( key, std::shared_ptr<void>( new alice::store_container<T>( name ) ) );
   }
 
   /*! \brief Retrieves store from environment */
   template<typename T>
-  store<T>& store() const
+  store_container<T>& store() const
   {
     constexpr auto key = store_info<T>::key;
 
-    return *( reinterpret_cast<alice::store<T>*>( stores.at( key ).get() ) );
+    return *( reinterpret_cast<alice::store_container<T>*>( stores.at( key ).get() ) );
   }
 
   /*! \brief Checks whether environment has store for some data type */
@@ -180,6 +180,12 @@ public:
     {
       return opts.count( "--" + option );
     }
+  }
+
+  template<typename T>
+  inline store_container<T>& store() const
+  {
+    return env->store<T>();
   }
 
 protected:

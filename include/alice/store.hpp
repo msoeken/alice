@@ -43,14 +43,14 @@ namespace alice
 /*! \brief Store container
  */
 template<class T>
-class store
+class store_container
 {
 public:
   /*! \brief Default constructor
 
     \param name Store name
   */
-  explicit store( const std::string& name ) : _name( name ) {}
+  explicit store_container( const std::string& name ) : _name( name ) {}
 
   /*! \brief Retrieve mutable reference to current store item
    */

@@ -29,3 +29,52 @@ some commands to the prompt::
      alias            help             quit
 
 It shows that the shell has 3 commands: ``alias``, ``help``, and ``quit``.
+Further information about each commands can be obtained by calling it with the
+``-h`` flag. We'll get to ``alias`` later.  Command ``help`` lists all available
+commands, and it also allows to search through the help texts of all commands.
+Command ``quit`` quits the program.
+
+Tutorial 2: Adding a store and writing a simple command
+-------------------------------------------------------
+
+We extend on the previous example and add a store to the shell.  A shell can
+have several stores, each is indexed by its type.
+
+.. literalinclude:: ../examples/tutorial2/tutorial2.cpp
+    :language: c++
+    :lines: 26-42
+
+The macro ``ALICE_ADD_STORE`` registers a store for strings (using type
+``std::string``).  The type is the first argument to the macro.  The other four
+are used to build commands.  The values ``str`` and ``s`` are long and short
+flag names, respectively, and will be used to select this type in several
+store-related commands, e.g., ``print --str`` or ``print -s`` to print a string
+to the terminal.  The last two arguments are a singular and plural name that is
+used to generate help strings in store-related commands.  Let's have a look what
+``help`` shows for this tutorial::
+
+    tutorial2> help
+    Generation commands:
+     hello
+    
+    General commands:
+     alias            convert          current          help
+     print            ps               quit             store
+
+First, we see two categories of commands, the first one (`Generation commands`)
+listing the custom command ``hello``.  We'll get to that one in a bit.  There
+are also several other general commands compared to the previous tutorial.
+These are called store-related commands are as follows:
+
++-------------+---------------------------------------------------+
+| ``convert`` | Converts a store element of one type into another |
++-------------+---------------------------------------------------+
+| ``current`` | Changes the current store element                 |
++-------------+---------------------------------------------------+
+| ``print``   | Prints the current store element                  |
++-------------+---------------------------------------------------+
+| ``ps``      | Prints statistics about the current store element |
++-------------+---------------------------------------------------+
+| ``store``   | Shows a summary of store elements                 |
++-------------+---------------------------------------------------+
+

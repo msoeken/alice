@@ -186,7 +186,7 @@ private:
 
 #define ALICE_DESCRIBE_STORE(type, element) \
 template<> \
-std::string to_string<std::string>( const type& element )
+std::string to_string<type>( const type& element )
 
 #define ALICE_PRINT_STORE(type, os, element) \
 template<> \
@@ -271,7 +271,7 @@ private:
   CLI& _cli;  
 };
 
-#define ALICE_COMMAND(name, category, description) \
+#define _ALICE_COMMAND_INIT(name, category) \
 struct name##_command_init \
 { \
   name##_command_init() \
@@ -279,7 +279,10 @@ struct name##_command_init \
     alice_globals::get().command_names.emplace_back(#name, category); \
   } \
 }; \
-name##_command_init _##name##_command_init; \
+name##_command_init _##name##_command_init;
+
+#define ALICE_COMMAND(name, category, description) \
+_ALICE_COMMAND_INIT(name, category) \
 class name##_command; \
 _ALICE_ADD_TO_LIST(alice_commands, name##_command) \
 class name##_command : public command \
@@ -290,6 +293,10 @@ protected: \
   void execute(); \
 }; \
 void name##_command::execute()
+
+#define ALICE_ADD_COMMAND(name, category) \
+_ALICE_COMMAND_INIT(name, category) \
+_ALICE_ADD_TO_LIST(alice_commands, name##_command)
 
 #define ALICE_INIT \
 _ALICE_START_LIST( alice_stores ) \

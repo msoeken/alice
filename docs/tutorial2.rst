@@ -1,48 +1,12 @@
-Tutorials
-=========
-
-Tutorial 1: A minimalistic example
-----------------------------------
-
-This tutorial shows a minimal example, the barely minimum what needs to be
-written in order to get an Alice shell.  The source files for this tutorial are
-located in ``examples/tutorial1``.
-
-.. literalinclude:: ../examples/tutorial1/tutorial1.cpp
-    :language: c++
-    :lines: 26-28
-
-That's all!   Two lines of code suffice.  The first line includes the Alice
-header ``alice/alice.hpp``.  In all use cases, this will be the only header that
-needs to be included.  The second line calls ``ALICE_MAIN``, which takes as
-argument a name for the shell.  Besides acting as the prompt, it will also be
-used as a name for the Python library, if it is build.
-
-Compile ``tutorial1.cpp`` and link it to the ``alice`` interface library; have a
-look into ``examples/CMakeLists.txt`` to check the details.  Even though we only
-wrote two lines of code, we already can do several things with the program. When
-executing the program (it will be in ``build/examples/tutorial1``), we can enter
-some commands to the prompt::
-
-    tutorial1> help
-    General commands:
-     alias            help             quit
-
-It shows that the shell has 3 commands: ``alias``, ``help``, and ``quit``.
-Further information about each commands can be obtained by calling it with the
-``-h`` flag. We'll get to ``alias`` later.  Command ``help`` lists all available
-commands, and it also allows to search through the help texts of all commands.
-Command ``quit`` quits the program.
-
 Tutorial 2: Adding a store and writing a simple command
--------------------------------------------------------
+=======================================================
 
 We extend on the previous example and add a store to the shell.  A shell can
 have several stores, each is indexed by its type.
 
 .. literalinclude:: ../examples/tutorial2/tutorial2.cpp
     :language: c++
-    :lines: 26-42
+    :lines: 26-47
 
 The macro ``ALICE_ADD_STORE`` registers a store for strings (using type
 ``std::string``).  The type is the first argument to the macro.  The other four
@@ -78,3 +42,31 @@ These are called store-related commands are as follows:
 | ``store``   | Shows a summary of store elements                 |
 +-------------+---------------------------------------------------+
 
+In each command the type of store must be addressed by the flag name that was
+defined for the store in ``ALICE_ADD_STORE``.  For example, ``print -s`` prints
+the current element from the string store to the terminal.  The code provided by
+the ``ALICE_PRINT_STORE`` macro is used to describe what should be printed for
+the specific store type.  In case of this string store, we just print the string
+followed by a new line.
+
+One new command is added using the macro ``ALICE_COMMAND``.  This macro only
+allows us to add very simple commands, with no custom arguments, and no custom
+logging behavior (we will see how to create more advanced commands in the next
+tutorials).  The command ``hello`` is defined using two other arguments to the
+macro, the second being a category used to partition commands when calling
+``help``, the third being a description text that is printed when calling
+``hello -h`` and is used by ``help -s`` to find commands.  The code accesses the
+store of strings, using ``store<std::string>()`` and extends it by one element
+using the method ``extend()``.  Since ``extend()`` returns a reference to the
+newly created element, we can assign it the value ``"hello world"``.  Let's have
+a look at a session that makes use of the new command::
+
+    tutorial2> store -s
+    [i] no strings in store
+    tutorial2> hello
+    tutorial2> store -s
+    [i] strings in store:
+      *  0:
+    tutorial2> print -s
+    hello world
+    tutorial2> quit

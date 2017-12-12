@@ -8,9 +8,12 @@ Welcome to alice's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Tutorials
 
-   tutorials
+   tutorial1
+   tutorial2
+   tutorial3
+   tutorial4
 
 
 Indices and tables

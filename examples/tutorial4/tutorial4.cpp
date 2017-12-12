@@ -25,23 +25,57 @@
 
 #include <alice/alice.hpp>
 
+#include <fmt/format.h>
 #include <string>
 
 namespace alice
 {
 
+using namespace std::string_literals;
+
 ALICE_ADD_STORE( std::string, "str", "s", "string", "strings" )
+ALICE_ADD_STORE( int, "number", "d", "number", "numbers" )
+
+ALICE_DESCRIBE_STORE( std::string, element )
+{
+  return fmt::format( "{} characters", element.size() );
+}
 
 ALICE_PRINT_STORE( std::string, os, element )
 {
   os << element << std::endl;
 }
 
-ALICE_COMMAND( hello, "Generation", "Generates a welcome string" )
+ALICE_DESCRIBE_STORE( int, element )
 {
-  store<std::string>().extend() = "hello world";
+  return element < 10 ? "small number" : "large number";
 }
 
+ALICE_PRINT_STORE( int, os, element )
+{
+  os << element << std::endl;
 }
 
-ALICE_MAIN( tutorial2 )
+class number_command : public command
+{
+public:
+  number_command( const environment::ptr& env )
+      : command( env, "reads a number" )
+  {
+    opts.add_option( "--load,load", number, "number to load to the store" );
+  }
+
+protected:
+  void execute()
+  {
+    env->store<int>().extend() = number;
+  }
+
+private:
+  int number;
+};
+
+ALICE_ADD_COMMAND( number, "Generation" )
+}
+
+ALICE_MAIN( tutorial4 )

@@ -27,11 +27,10 @@
 
 #include <fmt/format.h>
 #include <string>
+#include <vector>
 
 namespace alice
 {
-
-using namespace std::string_literals;
 
 ALICE_ADD_STORE( std::string, "str", "s", "string", "strings" )
 ALICE_ADD_STORE( int, "number", "d", "number", "numbers" )
@@ -54,6 +53,20 @@ ALICE_DESCRIBE_STORE( int, element )
 ALICE_PRINT_STORE( int, os, element )
 {
   os << element << std::endl;
+}
+
+ALICE_CONVERT( int, element, std::string )
+{
+  if ( element >= 0 && element < 10 )
+  {
+    return std::vector<std::string>{"zero", "one", "two", "three",
+                                    "four", "five", "six", "seven", 
+                                    "eight", "nine"}[element];
+  }
+  else
+  {
+    return "many";
+  }
 }
 
 class number_command : public command

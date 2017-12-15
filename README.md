@@ -1,3 +1,4 @@
+[![Documentation Status](https://readthedocs.org/projects/libalice/badge/?version=latest)](http://libalice.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # alice

@@ -186,23 +186,23 @@ private:
 
 #define ALICE_DESCRIBE_STORE(type, element) \
 template<> \
-std::string to_string<type>( const type& element )
+inline std::string to_string<type>( const type& element )
 
 #define ALICE_PRINT_STORE(type, os, element) \
 template<> \
-void print<type>( std::ostream& os, const type& element )
+inline void print<type>( std::ostream& os, const type& element )
 
 #define ALICE_READ_FILE(type, tag, filename, cmd) \
 template<> \
-bool can_read<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
+inline bool can_read<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
 template<> \
-type read<type, io_##tag##_tag_t>( const std::string& filename, command& cmd )
+inline type read<type, io_##tag##_tag_t>( const std::string& filename, command& cmd )
 
 #define ALICE_WRITE_FILE(type, tag, element, filename, cmd) \
 template<> \
-bool can_write<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
+inline bool can_write<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
 template<> \
-void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, command& cmd )
+inline void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, command& cmd )
 
 #define ALICE_ADD_FILE_TYPE(tag, name) \
 struct io_##tag##_tag_t \
@@ -242,6 +242,18 @@ struct io_##tag##_tag_t \
 }; \
 io_##tag##_tag_t _##tag##_tag; \
 _ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
+
+////////////////////////////////////////////////////////////////////////////////
+// convert
+
+#define ALICE_CONVERT( from, element, to ) \
+template<> \
+inline bool can_convert<from, to>() \
+{ \
+  return true; \
+} \
+template<> \
+inline to convert<from, to>( const from& element )
 
 ////////////////////////////////////////////////////////////////////////////////
 // commands

@@ -18,6 +18,10 @@ target_link_libraries(tutorial1 alice)
 add_executable(tutorial2 tutorial2/tutorial2.cpp)
 target_link_libraries(tutorial2 alice)
 
+# tutorial 3
+add_executable(tutorial3 tutorial3/tutorial3.cpp)
+target_link_libraries(tutorial3 alice)
+
 # tutorial 4
 add_executable(tutorial4 tutorial4/tutorial4.cpp)
 target_link_libraries(tutorial4 alice)

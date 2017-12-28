@@ -5,6 +5,7 @@ target_link_libraries(alice INTERFACE fmt::fmt-header-only)
 target_link_libraries(alice INTERFACE CLI11)
 target_link_libraries(alice INTERFACE mpark_variant)
 target_link_libraries(alice INTERFACE hana)
+target_link_libraries(alice INTERFACE json)
 
 # library for Python bindings
 add_library(alice_python INTERFACE)

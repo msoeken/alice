@@ -8,6 +8,12 @@ Welcome to alice's documentation!
 
 .. toctree::
    :maxdepth: 2
+
+   installation
+   changelog
+
+.. toctree::
+   :maxdepth: 2
    :caption: Tutorials
 
    tutorial1

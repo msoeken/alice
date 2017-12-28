@@ -40,7 +40,8 @@ struct io_file_tag_t;
 template<>
 bool can_write<std::string, io_file_tag_t>( command& cmd )
 {
-  cmd.opts.add_flag( "-p", "prepare something" );
+  cmd.add_option( "--value,-v", "give some value" );
+  cmd.add_flag( "-p", "prepare something" );
   return true;
 }
 
@@ -51,7 +52,11 @@ void write<std::string, io_file_tag_t>( const std::string& element, const std::s
   {
     cmd.env->out() << "prepare" << std::endl;
   }
-  cmd.env->out() << "write" << std::endl;
+  cmd.env->out() << "write " << element << " to " << filename << std::endl;
+  if ( cmd.is_set( "-v" ) )
+  {
+    cmd.env->out() << cmd.option_value( "-v" ) << std::endl;
+  }
 }
 }
 
@@ -73,14 +78,15 @@ TEST_CASE( "Adding commands to CLI", "[cli]" )
   cli.insert_command( "test", std::make_shared<test_command>( cli.env ) );
   cli.insert_write_command<io_file_tag_t>( "write_file", "File" );
 
-  char* args[] = {"", "-c", "store -s; test; store -s; write_file; write_file -p"};
+  char* args[] = {"", "-c", "store -s; test; store -s; write_file file; write_file -p -v abc file2"};
   cli.run( 3, args );
 
   CHECK( sstr.str() == "[i] no strings in store\n"
                        "Hello world\n"
                        "[i] strings in store:\n"
                        "  *  0: \n"
-                       "write\n"
+                       "write Hello world to file\n"
                        "prepare\n"
-                       "write\n" );
+                       "write Hello world to file2\n"
+                       "abc\n" );
 }

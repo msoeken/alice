@@ -179,3 +179,54 @@ if read_the_docs_build:
 
 breathe_projects = {"alice": "doxyxml/xml"}
 breathe_default_project = "alice"
+
+# -- Custom directives ----------------------------------------------------
+
+from docutils import nodes
+from docutils.parsers.rst import Directive
+from sphinx import addnodes
+import xml.etree.ElementTree as ET
+
+class DocOverviewTableDirective(Directive):
+    has_content = True
+    required_arguments = 1
+    option_spec = {"column": str}
+
+    def run(self):
+        doc = ET.parse("doxyxml/xml/{}.xml".format(self.arguments[0]))
+
+        table = nodes.table()
+        tgroup = nodes.tgroup(cols = 2)
+
+        tgroup += nodes.colspec(colwidth = 50)
+        tgroup += nodes.colspec(colwidth = 50)
+
+        # header
+        colname = self.options.get('column', "Function")
+        tgroup += nodes.thead('', nodes.row('', *[nodes.entry('', nodes.line(text = c)) for c in [colname, "Description"]]))
+
+        # rows
+        tbody = nodes.tbody()
+        for c in self.content:
+            refdesc, target = c.strip().split(' ')
+            refdomain, reftype = refdesc.split(':')
+
+            elem = doc.find("./compounddef/sectiondef/memberdef/[name='%s']" % target)
+
+            ref = addnodes.pending_xref('', refdomain = refdomain, refexplicit = False, reftype = reftype, reftarget = target)
+            ref += nodes.line(text = '%s' % target)
+
+            reft = nodes.paragraph()
+            reft.extend([ref])
+
+            func = nodes.entry('', reft)
+            desc = nodes.entry('', nodes.line(text = elem.findtext("./briefdescription/para")))
+
+            tbody += nodes.row('', func, desc)
+
+        tgroup += tbody
+        table += tgroup
+        return [table]
+
+def setup(app):
+    app.add_directive('doc_overview_table', DocOverviewTableDirective)

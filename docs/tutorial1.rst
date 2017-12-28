@@ -11,7 +11,7 @@ located in ``examples/tutorial1``.
 
 That's all!   Two lines of code suffice.  The first line includes the Alice
 header ``alice/alice.hpp``.  In all use cases, this will be the only header that
-needs to be included.  The second line calls ``ALICE_MAIN``, which takes as
+needs to be included.  The second line calls :c:macro:`ALICE_MAIN`, which takes as
 argument a name for the shell.  Besides acting as the prompt, it will also be
 used as a name for the Python library, if it is build.
 

@@ -15,10 +15,15 @@ Welcome to alice's documentation!
    tutorial3
    tutorial4
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference
+
+   macro_api
+
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

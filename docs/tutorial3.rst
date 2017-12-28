@@ -16,21 +16,22 @@ single store type for strings, and adds a function to print store elements.
     :lines: 26-42
 
 We now add the file type to read and write to text files using the macro
-``ALICE_ADD_FILE_TYPE``, which receives the tag name as first argument and a
-string defining it as second argument.  The second argument will be used to
-generate help strings.
+:c:macro:`ALICE_ADD_FILE_TYPE`, which receives the tag name as first argument
+and a string defining it as second argument.  The second argument will be used
+to generate help strings.
 
 .. literalinclude:: ../examples/tutorial3/tutorial3.cpp
     :language: c++
     :lines: 44
 
 If we wish to only read from or only write to a file type, we can use the macros
-``ALICE_ADD_FILE_TYPE_READ_ONLY`` or ``ALICE_ADD_FILE_TYPE_WRITE_ONLY``,
-respectively.  They have the same signature.
+:c:macro:`ALICE_ADD_FILE_TYPE_READ_ONLY` or
+:c:macro:`ALICE_ADD_FILE_TYPE_WRITE_ONLY`, respectively.  They have the same
+signature.
 
 Once the file type is declared, we can link the string store type to the file
 type and add functions to read from files and to write from files.  Reading from
-files is enabled using the macro ``ALICE_READ_FILE``, which receives four
+files is enabled using the macro :c:macro:`ALICE_READ_FILE`, which receives four
 parameters.  The first two parameters are store type and tag name.  The third
 parameter is the variable name containing the filename, and the last parameter
 gives access to the command parsing interface, which we won't use in this
@@ -40,9 +41,10 @@ tutorial.
     :language: c++
     :lines: 46-52
 
-Similarly, we enable writing from files using the macro ``ALICE_WRITE_FILE``. It
-receives one further parameter called ``element``, which is a variable accessing
-the current store element that should be written to a file.
+Similarly, we enable writing from files using the macro
+:c:macro:`ALICE_WRITE_FILE`. It receives one further parameter called
+``element``, which is a variable accessing the current store element that should
+be written to a file.
 
 .. literalinclude:: ../examples/tutorial3/tutorial3.cpp
     :language: c++

@@ -50,6 +50,7 @@
 namespace alice
 {
 
+/*! \cond PRIVATE */
 /* dynamic compile-time list construction based on https://stackoverflow.com/a/24092000 */
 struct nil {};
 
@@ -102,8 +103,20 @@ struct list_maker_key<T, 0> {};
 
 #define _ALICE_END_LIST(name) \
   using name = typename list_reverse_helper<decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{})), nil>::type; 
+/*! \endcond */
 
+/*! \brief Adds a store
 
+  Adds a new store type alice.  The first parameter is a type, all other
+  parameters are for program arguments and help strings in the general
+  store-related commands.
+  
+  \param type A type to define the store
+  \param _option Long option name to select store in general store commands
+  \param _mnemonic Short option name (single character) to select store in general store commands (cannot be ``n`` or ``v``)
+  \param _name Singular name used in help texts
+  \param _name_plural Plural name used in help texts
+*/
 #define ALICE_ADD_STORE(type, _option, _mnemonic, _name, _name_plural) \
 template<> \
 struct store_info<type> \
@@ -116,6 +129,7 @@ struct store_info<type> \
 }; \
 _ALICE_ADD_TO_LIST(alice_stores, type)
 
+/*! \cond PRIVATE */
 /* some global data structure */
 struct alice_globals
 {
@@ -129,6 +143,7 @@ struct alice_globals
   std::vector<std::string> read_tags, write_tags;
   std::vector<std::string> read_names, write_names;
 };
+/*! \endcond */
 
 template<typename CLI, typename... Tags>
 struct insert_read_commands
@@ -184,26 +199,83 @@ private:
   CLI& _cli;  
 };
 
+/*! \brief Returns a one-line string to show when printing store contents
+
+  This macro is used to return a string that is shown in the output of
+  ``store``, when each store entry is listed with its index and a short one-line
+  descriptiont text.
+
+  The macro must be followed by a code block.
+
+  \param type Store type
+  \param element Reference to the store element
+*/
 #define ALICE_DESCRIBE_STORE(type, element) \
 template<> \
 inline std::string to_string<type>( const type& element )
 
+/*! \brief Prints a store element to the terminal
+
+  This macro is used to generate the code that is executed when calling
+  ``print`` for a store.
+
+  The macro must be followed by a code block.
+
+  \param type Store type
+  \param os Output stream (default is ``std::cout`` when in standalone mode)
+  \param element Reference to the store element
+*/
 #define ALICE_PRINT_STORE(type, os, element) \
 template<> \
 inline void print<type>( std::ostream& os, const type& element )
 
+/*! \brief Read from a file into a store
+
+  This macro adds an implementation for reading from a file into a store.
+  Different file types may be supported, which are indexed using the tag.
+
+  The macro must be followed by a code block.
+  
+  \param type Store type
+  \param tag File tag
+  \param filename Filename
+  \param cmd Reference to the command line interface of the command
+*/
 #define ALICE_READ_FILE(type, tag, filename, cmd) \
 template<> \
 inline bool can_read<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
 template<> \
 inline type read<type, io_##tag##_tag_t>( const std::string& filename, command& cmd )
 
+/*! \brief Write to a file from a store
+
+  This macro adds an implementation for writing to a file from a store.
+  Different file types may be supported, which are indexed using the tag.
+
+  The macro must be followed by a code block.
+  
+  \param type Store type
+  \param tag File tag
+  \param element Reference to the store element
+  \param filename Filename
+  \param cmd Reference to the command line interface of the command
+*/
 #define ALICE_WRITE_FILE(type, tag, element, filename, cmd) \
 template<> \
 inline bool can_write<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
 template<> \
 inline void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, command& cmd )
 
+/*! \brief Registers a file type to alice
+
+  Calling this macro will mainly cause the addition of two commands
+  ``read_<tag>`` and ``write_<tag>`` to alice to read from files and write to
+  files.  The actual implementation is done using ``ALICE_READ_FILE`` and
+  ``ALICE_WRITE_FILE`` which will also associate store types to file tags.
+
+  \param tag File tag
+  \param name Name that is used for help strings
+*/
 #define ALICE_ADD_FILE_TYPE(tag, name) \
 struct io_##tag##_tag_t \
 { \
@@ -219,6 +291,13 @@ io_##tag##_tag_t _##tag##_tag; \
 _ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t) \
 _ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
 
+/*! \brief Registers a read-only file type to alice
+
+  Like ``ALICE_ADD_FILE_TYPE`` but only adds ``read_<tag>``.
+
+  \param tag File tag
+  \param name Name that is used for help strings
+*/
 #define ALICE_ADD_FILE_TYPE_READ_ONLY(tag, name) \
 struct io_##tag##_tag_t \
 { \
@@ -231,6 +310,13 @@ struct io_##tag##_tag_t \
 io_##tag##_tag_t _##tag##_tag; \
 _ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t)
 
+/*! \brief Registers a write-only file type to alice
+
+  Like ``ALICE_ADD_FILE_TYPE`` but only adds ``write_<tag>``.
+
+  \param tag File tag
+  \param name Name that is used for help strings
+*/
 #define ALICE_ADD_FILE_TYPE_WRITE_ONLY(tag, name) \
 struct io_##tag##_tag_t \
 { \
@@ -246,6 +332,17 @@ _ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
 ////////////////////////////////////////////////////////////////////////////////
 // convert
 
+/*! \brief Converts store element into another store element
+
+  This macro adds an implementation for conversion of a store element of type
+  ``from`` to a store element of type ``to``.  It causes a new option
+  ``--<from>_to_<to>`` for the ``convert`` command.
+
+  \param from Store type that should be converted from
+  \param element Reference to the store element that should be converted
+  \param to Store type that should be converted to
+  \return New store element
+*/
 #define ALICE_CONVERT( from, element, to ) \
 template<> \
 inline bool can_convert<from, to>() \
@@ -293,6 +390,19 @@ struct name##_command_init \
 }; \
 name##_command_init _##name##_command_init;
 
+/*! \brief Add and implements a simple command
+
+  Unline ``ALICE_ADD_COMMAND``, this macro can be used to also implement a
+  simple command.  However, it allows only to implement the code of the execute
+  function, and therefore no customization of command arguments, validators, and
+  logging is possible.
+
+  The macro must be followed by a code block.
+
+  \param name Name of the command
+  \param category Category of the command (as shown in ``help``)
+  \param description Short description of the command (as shown in ``help``)
+*/
 #define ALICE_COMMAND(name, category, description) \
 _ALICE_COMMAND_INIT(name, category) \
 class name##_command; \
@@ -306,10 +416,23 @@ protected: \
 }; \
 void name##_command::execute()
 
+/*! \brief Add a command
+
+  This macro adds a command to the shell interface.  When this macro is called,
+  a class of name ``<name>_command`` must have been defined that inherits from
+  ``alice::command`` or some of its subclasses.
+
+  The command is accessible from the shell interface using ``name``.  In Python
+  mode, the module will contain a function ``name``.
+
+  \param name Name of the command
+  \param category Category of the command (as shown in ``help``)
+ */
 #define ALICE_ADD_COMMAND(name, category) \
 _ALICE_COMMAND_INIT(name, category) \
 _ALICE_ADD_TO_LIST(alice_commands, name##_command)
 
+/*! \cond PRIVATE */
 #define ALICE_INIT \
 _ALICE_START_LIST( alice_stores ) \
 _ALICE_START_LIST( alice_commands ) \
@@ -343,6 +466,7 @@ _ALICE_START_LIST( alice_write_tags )
   using insert_commands_t = decltype( boost::hana::unpack( ctags_with_cli, boost::hana::template_<insert_commands> ) )::type; \
   insert_commands_t ic( cli ); \
   boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( ctags ) ), ic );
+/*! \endcond */
 
 #if defined ALICE_PYTHON
 #define ALICE_MAIN(prefix) \
@@ -352,6 +476,19 @@ PYBIND11_MODULE(prefix, m) \
   alice::detail::create_python_module( cli, m ); \
 }
 #else
+/*! \brief Alice main routine
+
+  The use of this macro is two-fold depending on whether alice is used for a
+  stand-alone application or for creating a Python library:
+  
+  - In stand-alone application mode, this starts the interactive shell which
+    accepts commands and replaces the C++ ``main`` method.  The prefix in the
+    shell will be taken from the first argument.
+  - In Python mode, this method will create a Python module with name
+    ``prefix``.
+
+  \param prefix Shell prefix or python module name (depending on mode)
+ */
 #define ALICE_MAIN(prefix) \
 int main( int argc, char ** argv ) \
 { \

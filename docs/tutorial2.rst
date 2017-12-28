@@ -8,7 +8,7 @@ have several stores, each is indexed by its type.
     :language: c++
     :lines: 26-47
 
-The macro ``ALICE_ADD_STORE`` registers a store for strings (using type
+The macro :c:macro:`ALICE_ADD_STORE` registers a store for strings (using type
 ``std::string``).  The type is the first argument to the macro.  The other four
 are used to build commands.  The values ``str`` and ``s`` are long and short
 flag names, respectively, and will be used to select this type in several
@@ -43,17 +43,17 @@ These are called store-related commands are as follows:
 +-------------+---------------------------------------------------+
 
 In each command the type of store must be addressed by the flag name that was
-defined for the store in ``ALICE_ADD_STORE``.  For example, ``print -s`` prints
-the current element from the string store to the terminal.  The code provided by
-the ``ALICE_PRINT_STORE`` macro is used to describe what should be printed for
-the specific store type.  In case of this string store, we just print the string
-followed by a new line.
+defined for the store in :c:macro:`ALICE_ADD_STORE`.  For example, ``print -s``
+prints the current element from the string store to the terminal.  The code
+provided by the :c:macro:`ALICE_PRINT_STORE` macro is used to describe what
+should be printed for the specific store type.  In case of this string store, we
+just print the string followed by a new line.
 
-One new command is added using the macro ``ALICE_COMMAND``.  This macro only
-allows us to add very simple commands, with no custom arguments, and no custom
-logging behavior (we will see how to create more advanced commands in the next
-tutorials).  The command ``hello`` is defined using two other arguments to the
-macro, the second being a category used to partition commands when calling
+One new command is added using the macro :c:macro:`ALICE_COMMAND`.  This macro
+only allows us to add very simple commands, with no custom arguments, and no
+custom logging behavior (we will see how to create more advanced commands in the
+next tutorials).  The command ``hello`` is defined using two other arguments to
+the macro, the second being a category used to partition commands when calling
 ``help``, the third being a description text that is printed when calling
 ``hello -h`` and is used by ``help -s`` to find commands.  The code accesses the
 store of strings, using ``store<std::string>()`` and extends it by one element

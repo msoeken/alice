@@ -85,7 +85,7 @@ public:
     }
 
     opts.add_option( "-c,--command", command, "process semicolon-separated list of commands" );
-    opts.add_option( "-f,--flag", file, "process file with new-line separated list of commands" );
+    opts.add_option( "-f,--filename", file, "process file with new-line separated list of commands" );
     opts.add_flag( "-e,--echo", "echo the command if read from command line or file" );
     opts.add_flag( "-n,--counter", "show a counter in the prefix" );
     opts.add_flag( "-i,--interactive", "continue in interactive mode after processing commands (in command or file mode)" );

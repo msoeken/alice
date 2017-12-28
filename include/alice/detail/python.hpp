@@ -49,74 +49,71 @@ namespace alice
 namespace detail
 {
 
-struct log_var_python_visitor
+py::object json_to_python( const nlohmann::json& json )
 {
-public:
-  py::object operator()( const std::string& s ) const
+  if ( json.is_null() )
   {
-    return py::str( s );
+    return py::none();
   }
-
-  py::object operator()( int i ) const
+  else if ( json.is_boolean() )
   {
-    return py::int_( i );
+    return py::bool_( json.get<bool>() );
   }
-
-  py::object operator()( unsigned i ) const
+  else if ( json.is_number() )
   {
-    return py::int_( static_cast<int>( i ) );
+    return py::float_( json.get<double>() );
   }
-
-  py::object operator()( uint64_t i ) const
+  else if ( json.is_object() )
   {
-    return py::int_( i );
-  }
+    py::dict _dict;
 
-  py::object operator()( double d ) const
-  {
-    return py::float_( d );
-  }
-
-  py::object operator()( bool b ) const
-  {
-    return py::bool_( b );
-  }
-
-  template<typename T>
-  py::object operator()( const std::vector<T>& v ) const
-  {
-    py::list value;
-
-    for ( const auto& element : v )
+    for ( auto it = json.begin(); it != json.end(); ++it )
     {
-      value.append( operator()( element ) );
+      _dict[py::str( it.key() )] = json_to_python( it.value() );
     }
 
-    return value;
+    return _dict;
   }
-};
+  else if ( json.is_array() )
+  {
+    py::list _list;
+
+    for ( const auto& element : json )
+    {
+      _list.append( json_to_python( element ) );
+    }
+
+    return _list;
+  }
+  else if ( json.is_string() )
+  {
+    return py::str( json.get<std::string>() );
+  }
+  else
+  {
+    /* should not happen */
+    return py::none();
+  }
+}
 
 class return_value_dict
 {
 public:
-  return_value_dict( const command::log_map_t& map )
+  return_value_dict( const nlohmann::json& map )
   {
-    log_var_python_visitor vis;
-
-    for ( const auto& lp : map )
+    for ( auto it = map.begin(); it != map.end(); ++it )
     {
-      if ( lp.first == "__repr__" )
+      if ( it.key() == "__repr__" )
       {
-        repr = mpark::get<std::string>( lp.second );
+        repr = it.value().get<std::string>();
       }
-      else if ( lp.first == "_repr_html_" )
+      else if ( it.key() == "_repr_html_" )
       {
-        repr_html = mpark::get<std::string>( lp.second );
+        repr_html = it.value().get<std::string>();
       }
       else
       {
-        const auto value = mpark::visit( vis, lp.second );
-        _dict[py::str( lp.first )] = value;
+        _dict[py::str( it.key() )] = json_to_python( it.value() );
       }
     }
   }
@@ -156,7 +153,7 @@ public:
   }
 
 private:
-  py::dict    _dict;
+  py::dict _dict;
 
   std::string repr;
   std::string repr_html;
@@ -169,12 +166,11 @@ void create_python_module( const CLI& cli, py::module& m )
 
   py::class_<return_value_dict> representer( m, "ReturnValueDict" );
   representer
-    .def( "__getitem__", &return_value_dict::__getitem__ )
-    .def( "__repr__", &return_value_dict::__repr__ )
-    .def( "_repr_html_", &return_value_dict::_repr_html_ )
-    .def( "dict", &return_value_dict::dict )
-    ;
-  
+      .def( "__getitem__", &return_value_dict::__getitem__ )
+      .def( "__repr__", &return_value_dict::__repr__ )
+      .def( "_repr_html_", &return_value_dict::_repr_html_ )
+      .def( "dict", &return_value_dict::dict );
+
   for ( const auto& p : cli.env->commands )
   {
     m.def( p.first.c_str(), [p]( py::kwargs kwargs ) -> py::object {
@@ -209,20 +205,19 @@ void create_python_module( const CLI& cli, py::module& m )
 
       const auto log = p.second->log();
 
-      if ( log )
+      if ( log.is_object() )
       {
-        return py::cast( return_value_dict( *log ) );
+        return py::cast( return_value_dict( log ) );
       }
       else
       {
         return py::none();
       }
-    }, p.second->caption().c_str() );
+    },
+           p.second->caption().c_str() );
   }
 }
-
 }
-
 }
 
 #endif

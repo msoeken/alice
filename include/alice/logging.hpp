@@ -40,154 +40,44 @@
 #include <unordered_map>
 #include <vector>
 
-#include <mpark/variant.hpp>
+#include <json.hpp>
 
 namespace alice
 {
 
-namespace detail
-{
-inline std::string json_escape( const std::string& s )
-{
-  std::stringstream ss;
-
-  for ( size_t i = 0; i < s.length(); ++i )
-  {
-    if ( s[i] == '\\' || s[i] == '"' )
-    {
-      ss << "\\" << s[i];
-    }
-    else if ( unsigned( s[i] ) < '\x20' )
-    {
-      ss << "\\u" << std::setfill( '0' ) << std::setw( 4 ) << std::hex << unsigned( s[i] );
-    }
-    else
-    {
-      ss << s[i];
-    }
-  }
-
-  return ss.str();
-}
-
-class log_var_visitor
-{
-public:
-  log_var_visitor( std::ostream& os ) : os( os ) {}
-
-  void operator()( const std::string& s ) const
-  {
-    os << "\"" << json_escape( s ) << "\"";
-  }
-
-  void operator()( int i ) const
-  {
-    os << i;
-  }
-
-  void operator()( unsigned i ) const
-  {
-    os << i;
-  }
-
-  void operator()( uint64_t i ) const
-  {
-    os << i;
-  }
-
-  void operator()( double d ) const
-  {
-    os << d;
-  }
-
-  void operator()( bool b ) const
-  {
-    os << ( b ? "true" : "false" );
-  }
-
-  template<typename T>
-  void operator()( const std::vector<T>& v ) const
-  {
-    os << "[";
-
-    bool first = true;
-
-    for ( const auto& element : v )
-    {
-      if ( !first )
-      {
-        os << ", ";
-      }
-      else
-      {
-        first = false;
-      }
-
-      operator()( element );
-    }
-
-    os << "]";
-  }
-
-private:
-  std::ostream& os;
-};
-}
-
 class logger
 {
 public:
-  using log_var_t = mpark::variant<std::string, int, unsigned, uint64_t, double, bool, std::vector<std::string>, std::vector<int>, std::vector<unsigned>, std::vector<uint64_t>, std::vector<std::vector<int>>, std::vector<std::vector<unsigned>>>;
-  using log_map_t = std::unordered_map<std::string, log_var_t>;
-  using log_opt_t = std::shared_ptr<log_map_t>;
-
-public:
   void start( const std::string& filename )
   {
-    logf.open( filename.c_str(), std::ofstream::out );
-    logf << "[";
+    _filename = filename;
   }
 
-  void log( const log_opt_t& cmdlog, const std::string& cmdstring, const std::chrono::system_clock::time_point& start )
+  void log( const nlohmann::json& cmdlog, const std::string& cmdstring, const std::chrono::system_clock::time_point& start )
   {
-    if ( !log_first_command )
-    {
-      logf << "," << std::endl;
-    }
-    else
-    {
-      log_first_command = false;
-    }
+    auto obj = cmdlog;
 
+    /* add command */
+    obj["command"] = cmdstring;
+
+    /* add time */
     const auto start_c = std::chrono::system_clock::to_time_t( start );
     char timestr[20];
     std::strftime( timestr, sizeof( timestr ), "%F %T", std::localtime( &start_c ) );
-    logf << fmt::format( "{{\n"
-                         "  \"command\": \"{}\",\n"
-                         "  \"time\": \"{}\"",
-                         detail::json_escape( cmdstring ), timestr );
 
-    if ( cmdlog )
-    {
-      detail::log_var_visitor vis( logf );
+    obj["time"] = timestr;
 
-      for ( const auto& p : *cmdlog )
-      {
-        logf << fmt::format( ",\n  \"{}\": ", p.first );
-        mpark::visit( vis, p.second );
-      }
-    }
-
-    logf << "\n}";
+    array.push_back( obj );
   }
 
   void stop()
   {
-    logf << "]" << std::endl;
+    std::ofstream os( _filename.c_str(), std::ofstream::out );
+    os << array;
   }
 
 private:
-  std::ofstream logf;
-  bool log_first_command{true};
+  std::string _filename;
+  nlohmann::json array = nlohmann::json::array();
 };
 }

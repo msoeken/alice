@@ -237,9 +237,7 @@ private:
 
       if ( env->log )
       {
-        auto log = std::make_shared<logger::log_map_t>();
-        ( *log )["status"] = result.first;
-        ( *log )["output"] = result.second;
+        nlohmann::json log = {{"status", result.first}, {"output", result.second}};
         env->logger.log( log, line, now );
       }
 

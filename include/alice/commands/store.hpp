@@ -84,7 +84,7 @@ int clear_helper( const command& cmd, const environment::ptr& env )
 }
 
 template<typename S>
-int log_helper( const command& cmd, const environment::ptr& env, command::log_map_t& map )
+int log_helper( const command& cmd, const environment::ptr& env, nlohmann::json& map )
 {
   constexpr auto option = store_info<S>::option;
 
@@ -128,11 +128,11 @@ protected:
     }
   }
 
-  log_opt_t log() const
+  nlohmann::json log() const
   {
-    log_map_t map;
+    nlohmann::json map;
     []( ... ) {}( log_helper<S>( *this, env, map )... );
-    return std::make_shared<log_map_t>( map );
+    return map;
   }
 };
 }

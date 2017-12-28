@@ -26,3 +26,12 @@ TEST_CASE( "Merge different JSON objects", "[libs]" )
   CHECK( combined.is_array() );
   CHECK( combined2.is_array() );
 }
+
+TEST_CASE( "Make null an object", "[libs]" )
+{
+  json obj = nullptr;
+  CHECK( obj.is_null() );
+
+  obj["command"] = "ps";
+  CHECK( obj.is_object() );
+}

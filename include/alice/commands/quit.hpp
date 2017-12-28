@@ -36,6 +36,8 @@
 
 #include <thread>
 
+#include <json.hpp>
+
 #include "../command.hpp"
 
 namespace alice
@@ -54,17 +56,17 @@ protected:
   }
 
 public:
-  log_opt_t log() const
+  nlohmann::json log() const
   {
+
     utsname u;
     uname( &u );
-    log_map_t map( {{"sysname", std::string( u.sysname )},
-                    {"nodename", std::string( u.nodename )},
-                    {"release", std::string( u.release )},
-                    {"version", std::string( u.version )},
-                    {"machine", std::string( u.machine )},
-                    {"supported_threads", static_cast<int>( std::thread::hardware_concurrency() )}} );
-    return std::make_shared<log_map_t>( map );
+    return nlohmann::json( {{"sysname", std::string( u.sysname )},
+                            {"nodename", std::string( u.nodename )},
+                            {"release", std::string( u.release )},
+                            {"version", std::string( u.version )},
+                            {"machine", std::string( u.machine )},
+                            {"supported_threads", static_cast<int>( std::thread::hardware_concurrency() )}} );
   }
 };
 }

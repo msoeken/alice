@@ -36,6 +36,8 @@
 #include <iostream>
 #include <string>
 
+#include <json.hpp>
+
 #include "command.hpp"
 #include "logging.hpp"
 
@@ -94,10 +96,10 @@ void print_statistics( std::ostream& out, const StoreType& element )
   \param element Store element
 */
 template<typename StoreType>
-logger::log_opt_t log_statistics( const StoreType& element )
+nlohmann::json log_statistics( const StoreType& element )
 {
   (void)element;
-  return logger::log_opt_t();
+  return nlohmann::json({});
 }
 
 /*! \brief Controls whether a store entry can read from a specific format

@@ -60,7 +60,7 @@ int print_helper( const command& cmd, const environment::ptr& env )
 }
 
 template<typename S>
-int print_log_helper( const command& cmd, const environment::ptr& env, command::log_map_t& map )
+int print_log_helper( const command& cmd, const environment::ptr& env, nlohmann::json& map )
 {
   constexpr auto option = store_info<S>::option;
   constexpr auto name = store_info<S>::name;

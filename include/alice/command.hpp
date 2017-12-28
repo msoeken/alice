@@ -41,6 +41,7 @@
 
 #include <CLI/CLI.hpp>
 #include <fmt/format.h>
+#include <json.hpp>
 
 #include "logging.hpp"
 #include "store.hpp"
@@ -116,9 +117,6 @@ public:
   using rule_t = std::pair<std::function<bool()>, std::string>;
   using rules_t = std::vector<rule_t>;
 
-  using log_map_t = logger::log_map_t;
-  using log_opt_t = logger::log_opt_t;
-
   command( const environment::ptr& env, const std::string& caption )
       : env( env ),
         opts( caption ),
@@ -193,7 +191,7 @@ protected:
   virtual void execute() = 0;
 
 public:
-  virtual log_opt_t log() const { return log_opt_t(); }
+  virtual nlohmann::json log() const { return nullptr; }
 
 protected:
   environment::ptr env;

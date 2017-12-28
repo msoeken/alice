@@ -34,6 +34,8 @@
 
 #include <vector>
 
+#include <json.hpp>
+
 #include "../command.hpp"
 
 namespace alice
@@ -61,9 +63,9 @@ int ps_helper( const command& cmd, const environment::ptr& env )
 }
 
 template<typename S>
-int ps_log_helper( const command& cmd, const environment::ptr& env, command::log_opt_t& ret )
+int ps_log_helper( const command& cmd, const environment::ptr& env, nlohmann::json& ret )
 {
-  if ( ret )
+  if ( !ret.empty() )
   {
     return 0;
   }
@@ -109,9 +111,9 @@ protected:
   }
 
 public:
-  log_opt_t log() const
+  nlohmann::json log() const
   {
-    log_opt_t ret;
+    nlohmann::json ret;
     [](...){}( ps_log_helper<S>( *this, env, ret )... );
     return ret;
   }

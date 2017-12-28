@@ -60,6 +60,12 @@ class environment
 public:
   using ptr = std::shared_ptr<environment>;
 
+  environment()
+      : _out( &std::cout ),
+        _err( &std::cerr )
+  {
+  }
+
   /*! \brief Adds store to environment */
   template<typename T>
   void add_store()
@@ -89,8 +95,14 @@ public:
   }
 
 public:
-  inline std::ostream& out() const { return std::cout; }
-  inline std::ostream& err() const { return std::cerr; }
+  inline std::ostream& out() const { return *_out; }
+  inline std::ostream& err() const { return *_err; }
+
+  inline void reroute( std::ostream& new_out, std::ostream& new_err )
+  {
+    _out = &new_out;
+    _err = &new_err;
+  }
 
 private:
   template<class... S>
@@ -109,6 +121,10 @@ public:
   bool log{false};
   alice::logger logger;
   bool quit{false};
+
+private:
+  std::ostream* _out;
+  std::ostream* _err;
 };
 
 class command
@@ -201,6 +217,18 @@ public:
 
 private:
   std::string scaption;
+
+public:
+  template<typename StoreType, typename Tag>
+  friend bool can_read( command& cmd );
+
+  template<typename StoreType, typename Tag>
+  friend StoreType read( const std::string& filename, command& cmd );
+
+  template<typename StoreType, typename Tag>
+  friend bool can_write( command& cmd );
+  template<typename StoreType, typename Tag>
+  friend void write( const StoreType& element, const std::string& filename, command& cmd );
 };
 
 template<typename S>
@@ -226,7 +254,10 @@ bool any_true_helper( std::initializer_list<T> list )
 {
   for ( auto i : list )
   {
-    if ( i ) { return true; }
+    if ( i )
+    {
+      return true;
+    }
   }
 
   return false;

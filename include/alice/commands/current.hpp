@@ -56,7 +56,7 @@ public:
   current_command( const environment::ptr& env )
       : command( env, "Switches current data structure" )
   {
-    opts.add_option( "index,-i,--index", index, "new index" );
+    opts.add_option( "index,--index", index, "new index" );
 
     []( ... ) {}( add_option_helper<S>( opts )... );
   }

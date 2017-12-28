@@ -43,6 +43,7 @@
 #include <fmt/format.h>
 #include <json.hpp>
 
+#include "detail/utils.hpp"
 #include "logging.hpp"
 #include "store.hpp"
 #include "store_api.hpp"
@@ -178,6 +179,38 @@ public:
     return true;
   }
 
+  inline auto add_flag( const std::string& name, const std::string& description = std::string() )
+  {
+    return opts.add_flag( name, description );
+  }
+
+  inline auto add_option( const std::string& name, const std::string& description = std::string() )
+  {
+    const auto index = options.size();
+    options.resize( options.size() + 1 );
+    auto opt = opts.add_option( name, options.back(), description );
+
+    for ( const auto& name : detail::split( opt->get_name(), "," ) )
+    {
+      option_index[name] = index;
+    }
+
+    return opt;
+  }
+
+  inline std::string option_value( const std::string& name )
+  {
+    const auto it = option_index.find( name );
+    if ( it == option_index.end() )
+    {
+      return std::string();
+    }
+    else
+    {
+      return options[it->second];
+    }
+  }
+
   inline bool is_set( const std::string& option ) const
   {
     assert( !option.empty() );
@@ -217,6 +250,8 @@ public:
 
 private:
   std::string scaption;
+  std::vector<std::string> options;
+  std::unordered_map<std::string, unsigned> option_index;
 
 public:
   template<typename StoreType, typename Tag>

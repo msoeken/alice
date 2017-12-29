@@ -46,6 +46,7 @@
 #include <fmt/format.h>
 
 #include "detail/python.hpp"
+#include "cli.hpp"
 
 namespace alice
 {
@@ -85,6 +86,38 @@ template<typename Head, typename Tail>
 struct list_to_tuple<cons<Head, Tail>>
 {
   static constexpr auto type = boost::hana::prepend(list_to_tuple<Tail>::type, boost::hana::type_c<Head>);
+};
+
+template<typename... S>
+struct cli_list
+{
+};
+
+template<typename T, typename... S>
+struct cli_list<T, cli<S...>>
+{
+    using type = cli<T, S...>;
+};
+
+template<>
+struct cli_list<>
+{
+    using type = cli<>;
+};
+
+template<typename List>
+struct list_to_cli;
+
+template<>
+struct list_to_cli<nil>
+{
+    using type = cli<>;
+};
+
+template<typename Head, typename Tail>
+struct list_to_cli<cons<Head, Tail>>
+{
+    using type = typename cli_list<Head, typename list_to_cli<Tail>::type>::type;
 };
 
 template<typename T, int N>
@@ -446,7 +479,7 @@ _ALICE_START_LIST( alice_write_tags )
   _ALICE_END_LIST( alice_read_tags ) \
   _ALICE_END_LIST( alice_write_tags ) \
   \
-  using cli_t = decltype( boost::hana::unpack( list_to_tuple<alice_stores>::type, boost::hana::template_<alice::cli> ) )::type; \
+  using cli_t = list_to_cli<alice_stores>::type; \
   cli_t cli( #prefix ); \
   \
   constexpr auto rtags = list_to_tuple<alice_read_tags>::type; \

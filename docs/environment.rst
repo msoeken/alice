@@ -9,6 +9,9 @@ Environment
    out
    err
    reroute
+   commands
+   categories
+   aliases
 
 .. doxygenclass:: alice::environment
    :members:

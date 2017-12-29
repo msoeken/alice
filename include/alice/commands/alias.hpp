@@ -50,7 +50,7 @@ public:
 protected:
   void execute()
   {
-    env->aliases[alias] = expansion;
+    env->_aliases[alias] = expansion;
   }
 
 private:

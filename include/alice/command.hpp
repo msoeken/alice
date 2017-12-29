@@ -77,7 +77,7 @@ public:
   {
     constexpr auto key = store_info<T>::key;
 
-    return *( reinterpret_cast<alice::store_container<T>*>( stores.at( key ).get() ) );
+    return *( reinterpret_cast<alice::store_container<T>*>( _stores.at( key ).get() ) );
   }
 
   /*! \brief Checks whether environment has store for some data type
@@ -89,7 +89,7 @@ public:
   {
     constexpr auto key = store_info<T>::key;
 
-    return stores.find( key ) != stores.end();
+    return _stores.find( key ) != _stores.end();
   }
 
   /*! \brief Retreives standard output stream
@@ -114,23 +114,39 @@ public:
 
     This method allows to change the output streams which are returned by
     ``out()`` and ``err()``.
-  */  
+  */
   inline void reroute( std::ostream& new_out, std::ostream& new_err )
   {
     _out = &new_out;
     _err = &new_err;
   }
 
-  /*! \brief Returns map of commands */
+  /*! \brief Returns map of commands
+  
+    The keys correspond to the command names in the shell.
+  */
   inline const std::unordered_map<std::string, std::shared_ptr<command>>& commands() const
   {
     return _commands;
   }
 
-  /*! \brief Returns map of categories */
+  /*! \brief Returns map of categories
+  
+    Keys are catgory names pointing to a vector of command names that can be
+    used to index into ``commands()``.
+  */
   inline const std::unordered_map<std::string, std::vector<std::string>>& categories() const
   {
     return _categories;
+  }
+
+  /*! \brief Returns a map of aliases
+
+    Keys are the alias regular expressions mapping to substitutions.
+  */
+  inline const std::unordered_map<std::string, std::string>& aliases() const
+  {
+    return _aliases;
   }
 
 private:
@@ -141,25 +157,25 @@ private:
     constexpr auto key = store_info<T>::key;
     constexpr auto name = store_info<T>::name;
 
-    stores.emplace( key, std::shared_ptr<void>( new alice::store_container<T>( name ) ) );
+    _stores.emplace( key, std::shared_ptr<void>( new alice::store_container<T>( name ) ) );
   }
 
 private:
-  /* cli is allowed to add stores, categories, and commands */
+  /* cli is friend to add stores, categories, and commands */
   template<class... S>
   friend class cli;
 
-  /* help command is allowed to sort categories */
+  /* help command is friend to sort categories */
   friend class help_command;
 
-  std::unordered_map<std::string, std::shared_ptr<void>> stores;
+  /* alias command is friend to insert aliases */
+  friend class alias_command;
 
 private:
+  std::unordered_map<std::string, std::shared_ptr<void>> _stores;
   std::unordered_map<std::string, std::shared_ptr<command>> _commands;
   std::unordered_map<std::string, std::vector<std::string>> _categories;
-
-public:
-  std::unordered_map<std::string, std::string> aliases;
+  std::unordered_map<std::string, std::string> _aliases;
 
 public:
   bool log{false};

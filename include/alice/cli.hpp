@@ -327,7 +327,7 @@ private:
   {
     std::smatch m;
 
-    for ( const auto& p : env->aliases )
+    for ( const auto& p : env->aliases() )
     {
       if ( std::regex_match( line, m, std::regex( p.first ) ) )
       {

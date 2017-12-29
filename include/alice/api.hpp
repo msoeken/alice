@@ -98,7 +98,7 @@ struct list_maker_key<T, 0> {};
   nil list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
 
 #define _ALICE_ADD_TO_LIST(name, type) \
-  static cons<type, decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{}))> \
+  cons<type, decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{}))> \
   list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
 
 #define _ALICE_END_LIST(name) \

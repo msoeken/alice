@@ -171,18 +171,19 @@ private:
   /* alias command is friend to insert aliases */
   friend class alias_command;
 
+  /* quit command is friend to update quit flag */
+  friend class quit_command;
+
 private:
   std::unordered_map<std::string, std::shared_ptr<void>> _stores;
   std::unordered_map<std::string, std::shared_ptr<command>> _commands;
   std::unordered_map<std::string, std::vector<std::string>> _categories;
   std::unordered_map<std::string, std::string> _aliases;
 
-public:
   bool log{false};
   alice::logger logger;
   bool quit{false};
 
-private:
   std::ostream* _out = &std::cout;
   std::ostream* _err = &std::cerr;
 };

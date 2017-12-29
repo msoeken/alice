@@ -5,7 +5,7 @@ language: cpp
 script:
   - mkdir build
   - cd build
-  - cmake -DALICE_TEST=ON -DALICE_EXAMPLES=ON ..
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DALICE_TEST=ON -DALICE_EXAMPLES=ON ..
   - make run_tests
   - ./test/run_tests
   - make tutorial1 tutorial2 tutorial3 tutorial4

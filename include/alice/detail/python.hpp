@@ -171,7 +171,7 @@ void create_python_module( const CLI& cli, py::module& m )
       .def( "_repr_html_", &return_value_dict::_repr_html_ )
       .def( "dict", &return_value_dict::dict );
 
-  for ( const auto& p : cli.env->commands )
+  for ( const auto& p : cli.env->commands() )
   {
     m.def( p.first.c_str(), [p]( py::kwargs kwargs ) -> py::object {
       std::vector<std::string> pargs = {p.first};

@@ -218,6 +218,10 @@ protected:
   /*! \brief Executes the command */
   virtual void execute() = 0;
 
+/* A small hack to get the Python bindings to work */
+#if defined ALICE_PYTHON
+public:
+#endif
   /*! \brief Returns logging data */
   virtual nlohmann::json log() const { return nullptr; }
 
@@ -361,7 +365,12 @@ public:
     return env->store<T>();
   }
 
+/* A small hack to get the Python bindings to work */
+#if defined ALICE_PYTHON
+public:
+#else
 private:
+#endif
   /*! \cond PRIVATE */
   virtual bool run( const std::vector<std::string>& args )
   {
@@ -423,6 +432,7 @@ private:
 
   template<typename StoreType, typename Tag>
   friend bool can_write( command& cmd );
+
   template<typename StoreType, typename Tag>
   friend void write( const StoreType& element, const std::string& filename, command& cmd );
 };

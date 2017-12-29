@@ -58,6 +58,15 @@ struct nil {};
 template<typename T, typename U>
 struct cons {};
 
+template<typename T, typename Tuple>
+struct tuple_append;
+
+template<typename T, typename... S>
+struct tuple_append<T, std::tuple<S...>>
+{
+  using type = std::tuple<S..., T>;
+};
+
 template<typename List>
 struct list_to_tuple;
 
@@ -73,36 +82,13 @@ struct list_to_tuple<cons<Head, Tail>>
   static constexpr auto type = boost::hana::prepend(list_to_tuple<Tail>::type, boost::hana::type_c<Head>);
 };
 
+template<typename T>
+struct tuple_to_cli;
+
 template<typename... S>
-struct cli_list
+struct tuple_to_cli<std::tuple<S...>>
 {
-};
-
-template<typename T, typename... S>
-struct cli_list<T, cli<S...>>
-{
-    using type = cli<S..., T>;
-};
-
-template<>
-struct cli_list<>
-{
-    using type = cli<>;
-};
-
-template<typename List>
-struct list_to_cli;
-
-template<>
-struct list_to_cli<nil>
-{
-    using type = cli_list<>::type;
-};
-
-template<typename Head, typename Tail>
-struct list_to_cli<cons<Head, Tail>>
-{
-    using type = typename cli_list<Head, typename list_to_cli<Tail>::type>::type;
+  using type = alice::cli<S...>;
 };
 
 template<typename T, int N>
@@ -120,6 +106,17 @@ struct list_maker_key<T, 0> {};
   list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
 
 #define _ALICE_END_LIST(name) \
+  using name = decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{}));
+
+#define _ALICE_START_LIST2(name) \
+  struct name##_list_maker; \
+  std::tuple<> list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
+
+#define _ALICE_ADD_TO_LIST2(name, added_type) \
+  tuple_append<added_type, decltype( list_maker_helper_( list_maker_key<name##_list_maker, __COUNTER__>{} ) )>::type \
+  list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
+
+#define _ALICE_END_LIST2(name) \
   using name = decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{})); 
 /*! \endcond */
 
@@ -145,7 +142,7 @@ struct store_info<type> \
   static constexpr const char* name = _name; \
   static constexpr const char* name_plural = _name_plural; \
 }; \
-_ALICE_ADD_TO_LIST(alice_stores, type)
+_ALICE_ADD_TO_LIST2(alice_stores, type)
 
 /*! \cond PRIVATE */
 /* some global data structure */
@@ -452,19 +449,19 @@ _ALICE_ADD_TO_LIST(alice_commands, name##_command)
 
 /*! \cond PRIVATE */
 #define ALICE_INIT \
-_ALICE_START_LIST( alice_stores ) \
+_ALICE_START_LIST2( alice_stores ) \
 _ALICE_START_LIST( alice_commands ) \
 _ALICE_START_LIST( alice_read_tags ) \
 _ALICE_START_LIST( alice_write_tags )
 
 #define _ALICE_MAIN_BODY(prefix) \
   using namespace alice; \
-  _ALICE_END_LIST( alice_stores ) \
+  _ALICE_END_LIST2( alice_stores ) \
   _ALICE_END_LIST( alice_commands ) \
   _ALICE_END_LIST( alice_read_tags ) \
   _ALICE_END_LIST( alice_write_tags ) \
   \
-  using cli_t = list_to_cli<alice_stores>::type; \
+  using cli_t = tuple_to_cli<alice_stores>::type; \
   cli_t cli( #prefix ); \
   \
   constexpr auto rtags = list_to_tuple<alice_read_tags>::type; \

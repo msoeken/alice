@@ -26,6 +26,7 @@ Welcome to alice's documentation!
    :caption: Reference
 
    macro_api
+   environment
    store
 
 Indices and tables

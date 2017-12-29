@@ -370,29 +370,25 @@ inline to convert<from, to>( const from& element )
 ////////////////////////////////////////////////////////////////////////////////
 // commands
 
-template<typename CLI, typename... Cmds>
+template<typename CLI, typename Tuple, std::size_t Index>
 struct insert_commands
 {
-  /* constructor stores reference to CLI instance */
-  insert_commands( CLI& cli ) : _cli( cli ) {}
-
-  template<typename... Indexes>
-  void operator()( Indexes... s )
+  insert_commands( CLI& cli )
   {
-    []( ... ){}( apply<CLI, Cmds>( _cli, s )... );
-  }
+    insert_commands<CLI, Tuple, Index - 1> ic( cli );
 
-private:
-  template<typename CCLI, typename T>
-  static int apply( CCLI& cli, std::size_t idx )
+    using command_type = std::tuple_element_t<Index - 1, Tuple>;
+    cli.set_category( alice_globals::get().command_names[Index - 1].second );
+    cli.insert_command( alice_globals::get().command_names[Index - 1].first, std::make_shared<command_type>( cli.env ) );
+  }
+};
+
+template<typename CLI, typename Tuple>
+struct insert_commands<CLI, Tuple, 0>
+{
+  insert_commands( CLI& cli )
   {
-    cli.set_category( alice_globals::get().command_names[idx].second );
-    cli.insert_command( alice_globals::get().command_names[idx].first, std::make_shared<T>( cli.env ) );
-    return 0;
   }
-
-private:
-  CLI& _cli;  
 };
 
 #define _ALICE_COMMAND_INIT(name, category) \
@@ -421,7 +417,7 @@ name##_command_init _##name##_command_init;
 #define ALICE_COMMAND(name, category, description) \
 _ALICE_COMMAND_INIT(name, category) \
 class name##_command; \
-_ALICE_ADD_TO_LIST(alice_commands, name##_command) \
+_ALICE_ADD_TO_LIST2(alice_commands, name##_command) \
 class name##_command : public command \
 { \
 public: \
@@ -445,19 +441,19 @@ void name##_command::execute()
  */
 #define ALICE_ADD_COMMAND(name, category) \
 _ALICE_COMMAND_INIT(name, category) \
-_ALICE_ADD_TO_LIST(alice_commands, name##_command)
+_ALICE_ADD_TO_LIST2(alice_commands, name##_command)
 
 /*! \cond PRIVATE */
 #define ALICE_INIT \
 _ALICE_START_LIST2( alice_stores ) \
-_ALICE_START_LIST( alice_commands ) \
+_ALICE_START_LIST2( alice_commands ) \
 _ALICE_START_LIST( alice_read_tags ) \
 _ALICE_START_LIST( alice_write_tags )
 
 #define _ALICE_MAIN_BODY(prefix) \
   using namespace alice; \
   _ALICE_END_LIST2( alice_stores ) \
-  _ALICE_END_LIST( alice_commands ) \
+  _ALICE_END_LIST2( alice_commands ) \
   _ALICE_END_LIST( alice_read_tags ) \
   _ALICE_END_LIST( alice_write_tags ) \
   \
@@ -476,11 +472,7 @@ _ALICE_START_LIST( alice_write_tags )
   insert_write_commands_t iwc( cli ); \
   boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( wtags ) ), iwc ); \
   \
-  constexpr auto ctags = list_to_tuple<alice_commands>::type; \
-  constexpr auto ctags_with_cli = boost::hana::prepend( ctags, boost::hana::type_c<cli_t> ); \
-  using insert_commands_t = decltype( boost::hana::unpack( ctags_with_cli, boost::hana::template_<insert_commands> ) )::type; \
-  insert_commands_t ic( cli ); \
-  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( ctags ) ), ic );
+  insert_commands<cli_t, alice_commands, std::tuple_size<alice_commands>::value> ic( cli );
 /*! \endcond */
 
 #if defined ALICE_PYTHON

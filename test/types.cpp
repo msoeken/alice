@@ -56,6 +56,15 @@ struct list_to_cli<cons<Head, Tail>>
   using type = typename cli_list<Head, typename list_to_cli<Tail>::type>::type;
 };
 
+template<typename T>
+struct tuple_to_cli;
+
+template<typename... S>
+struct tuple_to_cli<std::tuple<S...>>
+{
+  using type = alice::cli<S...>;
+};
+
 template<typename T, int N>
 struct list_maker_key : list_maker_key<T, N - 1>
 {
@@ -108,7 +117,7 @@ struct helper
 template<typename Tuple>
 struct helper<Tuple, 0>
 {
-  helper( const std::vector<std::string>& names, std::string& results )
+  helper( const std::vector<std::string>&, std::string& )
   {
   }
 };
@@ -122,6 +131,8 @@ TEST_CASE( "Create list with macros", "[meta]" )
 
   CHECK( std::is_same<std::tuple<int, char>, types>::value );
   CHECK( std::is_same<int, std::tuple_element<0, types>::type>::value );
+
+  CHECK( std::is_same<alice::cli<int, char>, tuple_to_cli<types>::type>::value );
 
   std::string result;
   helper<types, 2>( std::vector<std::string>{ "abc", "def" }, result );

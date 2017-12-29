@@ -207,22 +207,18 @@ class DocOverviewTableDirective(Directive):
 
         # rows
         tbody = nodes.tbody()
-        for c in self.content:
-            refdesc, target = c.strip().split(' ')
-            refdomain, reftype = refdesc.split(':')
+        for target in self.content:
+            for elem in doc.findall("./compounddef/sectiondef/memberdef/[name='%s']" % target):
+                ref = nodes.reference('', target, internal = True)
+                ref['refuri'] = '#{}'.format( elem.attrib["id"] )
 
-            elem = doc.find("./compounddef/sectiondef/memberdef/[name='%s']" % target)
+                reft = nodes.paragraph()
+                reft.extend([ref])
 
-            ref = addnodes.pending_xref('', refdomain = refdomain, refexplicit = False, reftype = reftype, reftarget = target)
-            ref += nodes.line(text = '%s' % target)
+                func = nodes.entry('', reft)
+                desc = nodes.entry('', nodes.line(text = elem.findtext("./briefdescription/para")))
 
-            reft = nodes.paragraph()
-            reft.extend([ref])
-
-            func = nodes.entry('', reft)
-            desc = nodes.entry('', nodes.line(text = elem.findtext("./briefdescription/para")))
-
-            tbody += nodes.row('', func, desc)
+                tbody += nodes.row('', func, desc)
 
         tgroup += tbody
         table += tgroup

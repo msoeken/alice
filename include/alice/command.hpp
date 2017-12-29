@@ -57,17 +57,83 @@ class command;
 template<class... S>
 class cli;
 
+/*! \brief Shell environment
+
+  The environment gives access to shell related properties, e.g., the commands
+  and stores.
+*/
 class environment
 {
 public:
+  /*! \brief Smart pointer alias for environment */
   using ptr = std::shared_ptr<environment>;
 
-  environment()
-      : _out( &std::cout ),
-        _err( &std::cerr )
+  /*! \brief Retrieves store from environment
+
+    The store can be accessed using its type.
+  */
+  template<typename T>
+  store_container<T>& store() const
   {
+    constexpr auto key = store_info<T>::key;
+
+    return *( reinterpret_cast<alice::store_container<T>*>( stores.at( key ).get() ) );
   }
 
+  /*! \brief Checks whether environment has store for some data type
+  
+    Stores are defined by their type.
+  */
+  template<typename T>
+  bool has_store() const
+  {
+    constexpr auto key = store_info<T>::key;
+
+    return stores.find( key ) != stores.end();
+  }
+
+  /*! \brief Retreives standard output stream
+
+    This method returns a reference to the current standard output stream.  In
+    stand-alone application mode, this is ``std::cout`` by default, but can be
+    changed.  Users should aim for not printing to ``std::cout`` directly in a
+    command, but use ``env->out()`` instead.
+  */
+  inline std::ostream& out() const { return *_out; }
+
+  /*! \brief Retreives standard error stream
+
+    This method returns a reference to the current standard error stream.  In
+    stand-alone application mode, this is ``std::cerr`` by default, but can be
+    changed.  Users should aim for not printing to ``std::cerr`` directly in a
+    command, but use ``env->err()`` instead.
+  */
+  inline std::ostream& err() const { return *_err; }
+
+  /*! \brief Changes output and error streams
+
+    This method allows to change the output streams which are returned by
+    ``out()`` and ``err()``.
+  */  
+  inline void reroute( std::ostream& new_out, std::ostream& new_err )
+  {
+    _out = &new_out;
+    _err = &new_err;
+  }
+
+  /*! \brief Returns map of commands */
+  inline const std::unordered_map<std::string, std::shared_ptr<command>>& commands() const
+  {
+    return _commands;
+  }
+
+  /*! \brief Returns map of categories */
+  inline const std::unordered_map<std::string, std::vector<std::string>>& categories() const
+  {
+    return _categories;
+  }
+
+private:
   /*! \brief Adds store to environment */
   template<typename T>
   void add_store()
@@ -78,45 +144,21 @@ public:
     stores.emplace( key, std::shared_ptr<void>( new alice::store_container<T>( name ) ) );
   }
 
-  /*! \brief Retrieves store from environment */
-  template<typename T>
-  store_container<T>& store() const
-  {
-    constexpr auto key = store_info<T>::key;
-
-    return *( reinterpret_cast<alice::store_container<T>*>( stores.at( key ).get() ) );
-  }
-
-  /*! \brief Checks whether environment has store for some data type */
-  template<typename T>
-  bool has_store() const
-  {
-    constexpr auto key = store_info<T>::key;
-
-    return stores.find( key ) != stores.end();
-  }
-
-public:
-  inline std::ostream& out() const { return *_out; }
-  inline std::ostream& err() const { return *_err; }
-
-  inline void reroute( std::ostream& new_out, std::ostream& new_err )
-  {
-    _out = &new_out;
-    _err = &new_err;
-  }
-
 private:
+  /* cli is allowed to add stores, categories, and commands */
   template<class... S>
   friend class cli;
 
-  friend class command;
+  /* help command is allowed to sort categories */
+  friend class help_command;
 
   std::unordered_map<std::string, std::shared_ptr<void>> stores;
 
+private:
+  std::unordered_map<std::string, std::shared_ptr<command>> _commands;
+  std::unordered_map<std::string, std::vector<std::string>> _categories;
+
 public:
-  std::unordered_map<std::string, std::shared_ptr<command>> commands;
-  std::unordered_map<std::string, std::vector<std::string>> categories;
   std::unordered_map<std::string, std::string> aliases;
 
 public:
@@ -125,8 +167,8 @@ public:
   bool quit{false};
 
 private:
-  std::ostream* _out;
-  std::ostream* _err;
+  std::ostream* _out = &std::cout;
+  std::ostream* _err = &std::cerr;
 };
 
 class command

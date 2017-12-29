@@ -99,8 +99,8 @@ public:
 
   void insert_command( const std::string& name, const std::shared_ptr<command>& cmd )
   {
-    env->categories[category].push_back( name );
-    env->commands[name] = cmd;
+    env->_categories[category].push_back( name );
+    env->_commands[name] = cmd;
   }
 
   template<typename Tag>
@@ -255,8 +255,8 @@ private:
 
     auto vline = detail::split_with_quotes<' '>( line );
 
-    const auto it = env->commands.find( vline.front() );
-    if ( it != env->commands.end() )
+    const auto it = env->commands().find( vline.front() );
+    if ( it != env->commands().end() )
     {
       const auto now = std::chrono::system_clock::now();
       const auto result = it->second->run( vline );

@@ -60,12 +60,11 @@ void write<std::string, io_file_tag_t>( const std::string& element, const std::s
 }
 }
 
-TEST_CASE( "Basic environment operations", "[environment]" )
+TEST_CASE( "Stores are added to the CLI", "[cli]" )
 {
-  environment env;
-  env.add_store<std::string>();
-  CHECK( env.has_store<std::string>() );
-  CHECK( env.store<std::string>().empty() );
+  alice::cli<std::string> cli( "test" );
+  CHECK( cli.env->has_store<std::string>() );
+  CHECK( cli.env->store<std::string>().empty() );
 }
 
 TEST_CASE( "Adding commands to CLI", "[cli]" )

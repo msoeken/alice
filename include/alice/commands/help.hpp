@@ -67,7 +67,7 @@ protected:
 private:
   void search_command()
   {
-    for ( const auto& command : env->commands )
+    for ( const auto& command : env->commands() )
     {
       auto text = command.second->opts.help();
       std::string::iterator it;
@@ -112,7 +112,7 @@ private:
 
   void print_commands()
   {
-    for ( auto& p : env->categories )
+    for ( auto& p : env->_categories )
     {
       env->out() << p.first << " commands:" << std::endl;
 
@@ -122,7 +122,7 @@ private:
       {
         for ( const auto& name : p.second )
         {
-          env->out() << fmt::format( " {:<17} : {}", name, env->commands[name]->caption() ) << std::endl;
+          env->out() << fmt::format( " {:<17} : {}", name, env->commands().at( name )->caption() ) << std::endl;
         }
         env->out() << std::endl;
       }

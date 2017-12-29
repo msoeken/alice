@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <experimental/any>
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -184,10 +185,11 @@ public:
     return opts.add_flag( name, description );
   }
 
+  template<typename T = std::string>
   inline auto add_option( const std::string& name, const std::string& description = std::string() )
   {
     const auto index = options.size();
-    options.resize( options.size() + 1 );
+    options.push_back( T() );
     auto opt = opts.add_option( name, options.back(), description );
 
     for ( const auto& name : detail::split( opt->get_name(), "," ) )
@@ -198,16 +200,18 @@ public:
     return opt;
   }
 
-  inline std::string option_value( const std::string& name )
+  template<typename T = std::string>
+  inline T option_value( const std::string& name, const T& default_value = T() )
   {
     const auto it = option_index.find( name );
     if ( it == option_index.end() )
     {
-      return std::string();
+      return default_value;
     }
     else
     {
-      return options[it->second];
+      const std::experimental::any& a = options.at( it->second );
+      return *std::experimental::any_cast<T>( &a );
     }
   }
 
@@ -250,7 +254,7 @@ public:
 
 private:
   std::string scaption;
-  std::vector<std::string> options;
+  std::vector<std::experimental::any> options;
   std::unordered_map<std::string, unsigned> option_index;
 
 public:

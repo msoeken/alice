@@ -58,21 +58,6 @@ struct nil {};
 template<typename T, typename U>
 struct cons {};
 
-template<typename List, typename Reversed>
-struct list_reverse_helper;
-
-template<typename Reversed>
-struct list_reverse_helper<nil, Reversed> 
-{
-  using type = Reversed;
-};
-
-template<typename Head, typename Tail, typename Reversed>
-struct list_reverse_helper<cons<Head, Tail>, Reversed>
-{
-  using type = typename list_reverse_helper<Tail, cons<Head, Reversed>>::type;
-};
-
 template<typename List>
 struct list_to_tuple;
 
@@ -96,7 +81,7 @@ struct cli_list
 template<typename T, typename... S>
 struct cli_list<T, cli<S...>>
 {
-    using type = cli<T, S...>;
+    using type = cli<S..., T>;
 };
 
 template<>
@@ -111,7 +96,7 @@ struct list_to_cli;
 template<>
 struct list_to_cli<nil>
 {
-    using type = cli<>;
+    using type = cli_list<>::type;
 };
 
 template<typename Head, typename Tail>
@@ -135,7 +120,7 @@ struct list_maker_key<T, 0> {};
   list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
 
 #define _ALICE_END_LIST(name) \
-  using name = typename list_reverse_helper<decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{})), nil>::type; 
+  using name = decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{})); 
 /*! \endcond */
 
 /*! \brief Adds a store

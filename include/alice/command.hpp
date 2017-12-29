@@ -188,12 +188,22 @@ private:
   std::ostream* _err = &std::cerr;
 };
 
+/*! \brief Command base class */
 class command
 {
 public:
   using rule_t = std::pair<std::function<bool()>, std::string>;
   using rules_t = std::vector<rule_t>;
 
+  /*! \brief Default constructor
+
+    The shell environment that is passed as the first argument should be the one
+    from the ``alice::cli`` instance.  Typically, commands are constructed and
+    added using the macro API, e.g., ``ALICE_COMMAND`` or ``ALICE_ADD_COMMAND``.
+
+    \param env Shell environment
+    \param caption Short (one-line) description of the command
+  */
   command( const environment::ptr& env, const std::string& caption )
       : env( env ),
         opts( caption ),
@@ -201,8 +211,158 @@ public:
   {
   }
 
+protected:
+  /*! \brief Returns rules to check validity of command line arguments */
+  virtual rules_t validity_rules() const { return {}; }
+
+  /*! \brief Executes the command */
+  virtual void execute() = 0;
+
+  /*! \brief Returns logging data */
+  virtual nlohmann::json log() const { return nullptr; }
+
+public:
+  /*! \brief Returns command short description */
   inline const auto& caption() const { return scaption; }
 
+  /*! \brief Adds a flag to the command
+
+    This function should be called in the constructor when the program options
+    are set up.  See https://github.com/CLIUtils/CLI11#adding-options for more
+    information.
+
+    This is a shortcut to ``opts.add_flag``.
+
+    \param name Flag names (short flags are prefixed with a single dash, long
+                flags with a double dash), multiple flag names are separated by
+                a comma.
+    \param description Description for the help text
+    \return Option instance
+  */
+  inline auto add_flag( const std::string& name, const std::string& description )
+  {
+    return opts.add_flag( name, description );
+  }
+
+  /*! \brief Adds an option to the command
+
+    This function should be called in the constructor when the program options
+    are set up.  See https://github.com/CLIUtils/CLI11#adding-options for more
+    information.
+
+    This is a shortcut to ``opts.add_option``.
+
+    \param name Option names (short options are prefixed with a single dash,
+                long options with a double dash, positional options without any
+                dash), multiple option names are separated by a comma.
+    \param value Reference where option value is store
+    \param description Description for the help text
+    \return Option instance
+  */
+  template<typename T>
+  inline auto add_option( const std::string& name, T& value, const std::string& description )
+  {
+    return opts.add_option( name, value, description );
+  }
+
+  /*! \brief Adds an anonymous option to the command
+
+    Unlike the other method, this method adds an option, but takes the value
+    reference from the command itself.  This is especially helpful when using
+    the store API, e.g., ``can_read`` together with ``read``, where command line
+    options are setup in one function but used in another.
+
+    Use a type as template argument to specify the type of the option value and
+    use ``option_value`` to return the option value using any of the option
+    names (incl. possible dashes).
+
+    \param name Option names (short options are prefixed with a single dash,
+                long options with a double dash, positional options without any
+                dash), multiple option names are separated by a comma.
+    \param description Description for the help text
+    \return Option instance
+  */
+  template<typename T = std::string>
+  inline auto add_option( const std::string& name, const std::string& description )
+  {
+    const auto index = options.size();
+    options.push_back( T() );
+    auto opt = opts.add_option( name, options.back(), description );
+
+    for ( const auto& name : detail::split( opt->get_name(), "," ) )
+    {
+      option_index[name] = index;
+    }
+
+    return opt;
+  }
+
+  /*! \brief Returns the value for an anonymous option
+
+    Use any of the option names to access a value.  For example, if the option
+    names were ``"--option,-o"``, then one can use both ``"--option"`` and
+    ``"-o"`` as value for the ``name`` parameter.  It is important that the same
+    type is used to retrieve the option value that was used to add the anonymous
+    option.  If the option name does not point to an anonymous option, a default
+    value is returned.
+
+    \param name One of the option names that was used to create the option
+    \param default_value Dafault value, if name does not point to anonymous option
+    \return Option value
+  */
+  template<typename T = std::string>
+  inline T option_value( const std::string& name, const T& default_value = T() )
+  {
+    const auto it = option_index.find( name );
+    if ( it == option_index.end() )
+    {
+      return default_value;
+    }
+    else
+    {
+      const std::experimental::any& a = options.at( it->second );
+      return *std::experimental::any_cast<T>( &a );
+    }
+  }
+
+  /*! \brief Checks whether an option was set when calling the command
+
+    Any of the option names can be passed, with our without dashes.
+
+    \param name Option name
+  */
+  inline bool is_set( const std::string& name ) const
+  {
+    if ( name.empty() )
+    {
+      return false;
+    }
+    else if ( name.front() == '-' )
+    {
+      return opts.count( name );
+    }
+    else if ( name.size() == '1' )
+    {
+      return opts.count( "-" + name );
+    }
+    else
+    {
+      return opts.count( "--" + name );
+    }
+  }
+
+  /*! \brief Returns a store
+
+    Short cut for ``env->store<T>()``.
+  */
+  template<typename T>
+  inline store_container<T>& store() const
+  {
+    return env->store<T>();
+  }
+
+private:
+  /*! \cond PRIVATE */
   virtual bool run( const std::vector<std::string>& args )
   {
     opts.reset();
@@ -238,72 +398,7 @@ public:
     execute();
     return true;
   }
-
-  inline auto add_flag( const std::string& name, const std::string& description = std::string() )
-  {
-    return opts.add_flag( name, description );
-  }
-
-  template<typename T = std::string>
-  inline auto add_option( const std::string& name, const std::string& description = std::string() )
-  {
-    const auto index = options.size();
-    options.push_back( T() );
-    auto opt = opts.add_option( name, options.back(), description );
-
-    for ( const auto& name : detail::split( opt->get_name(), "," ) )
-    {
-      option_index[name] = index;
-    }
-
-    return opt;
-  }
-
-  template<typename T = std::string>
-  inline T option_value( const std::string& name, const T& default_value = T() )
-  {
-    const auto it = option_index.find( name );
-    if ( it == option_index.end() )
-    {
-      return default_value;
-    }
-    else
-    {
-      const std::experimental::any& a = options.at( it->second );
-      return *std::experimental::any_cast<T>( &a );
-    }
-  }
-
-  inline bool is_set( const std::string& option ) const
-  {
-    assert( !option.empty() );
-
-    if ( option.front() == '-' )
-    {
-      return opts.count( option );
-    }
-    else if ( option.size() == '1' )
-    {
-      return opts.count( "-" + option );
-    }
-    else
-    {
-      return opts.count( "--" + option );
-    }
-  }
-
-  template<typename T>
-  inline store_container<T>& store() const
-  {
-    return env->store<T>();
-  }
-
-protected:
-  virtual rules_t validity_rules() const { return {}; }
-  virtual void execute() = 0;
-
-public:
-  virtual nlohmann::json log() const { return nullptr; }
+  /*! \endcond */
 
 protected:
   environment::ptr env;
@@ -316,7 +411,10 @@ private:
   std::vector<std::experimental::any> options;
   std::unordered_map<std::string, unsigned> option_index;
 
-public:
+private:
+  template<typename... S>
+  friend class cli;
+
   template<typename StoreType, typename Tag>
   friend bool can_read( command& cmd );
 

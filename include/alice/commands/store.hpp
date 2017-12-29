@@ -102,8 +102,8 @@ public:
   store_command( const environment::ptr& env )
       : command( env, "Store management" )
   {
-    opts.add_flag( "--show", "show contents" );
-    opts.add_flag( "--clear", "clear contents" );
+    add_flag( "--show", "show contents" );
+    add_flag( "--clear", "clear contents" );
 
     []( ... ) {}( add_option_helper<S>( opts )... );
   }

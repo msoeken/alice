@@ -43,8 +43,8 @@ public:
   alias_command( const environment::ptr& env )
       : command( env, "Create command aliases" )
   {
-    opts.add_option( "alias,--alias", alias, "regular expression for the alias" )->required();
-    opts.add_option( "expansion,--expansion", expansion, "expansion for the alias" )->required();
+    add_option( "alias,--alias", alias, "regular expression for the alias" )->required();
+    add_option( "expansion,--expansion", expansion, "expansion for the alias" )->required();
   }
 
 protected:

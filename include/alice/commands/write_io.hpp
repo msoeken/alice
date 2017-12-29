@@ -89,7 +89,7 @@ public:
       default_option.clear();
     }
 
-    opts.add_option( "filename,--filename", filename, "filename" );
+    add_option( "filename,--filename", filename, "filename" );
   }
 
 protected:

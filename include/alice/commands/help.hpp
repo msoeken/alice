@@ -47,8 +47,8 @@ class help_command : public command
 public:
   help_command( const environment::ptr& env ) : command( env, "Shows help" )
   {
-    opts.add_flag( "-d,--detailed", "show command descriptions" );
-    opts.add_option( "-s,--search", search, "search for commands in help descriptions" );
+    add_flag( "-d,--detailed", "show command descriptions" );
+    add_option( "-s,--search", search, "search for commands in help descriptions" );
   }
 
 protected:

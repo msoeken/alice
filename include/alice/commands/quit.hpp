@@ -55,7 +55,6 @@ protected:
     env->quit = true;
   }
 
-public:
   nlohmann::json log() const
   {
 

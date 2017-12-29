@@ -91,7 +91,7 @@ public:
     : command( env, "Print statistics" )
   {
     [](...){}( add_option_helper<S>( opts )... );
-    opts.add_flag( "--silent", "produce no output" );
+    add_flag( "--silent", "produce no output" );
   }
 
 protected:
@@ -110,7 +110,6 @@ protected:
     }
   }
 
-public:
   nlohmann::json log() const
   {
     nlohmann::json ret;

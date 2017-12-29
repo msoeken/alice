@@ -107,8 +107,8 @@ public:
       default_option.clear();
     }
 
-    opts.add_option( "filename,--filename", filename, "filename" )->check( CLI::ExistingFile );
-    opts.add_flag( "-n,--new", "create new store entry" );
+    add_option( "filename,--filename", filename, "filename" )->check( CLI::ExistingFile );
+    add_flag( "-n,--new", "create new store entry" );
   }
 
 protected:

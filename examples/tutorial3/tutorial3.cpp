@@ -65,4 +65,4 @@ ALICE_COMMAND(upper, "Manipulation", "changes string to upper bound")
 
 }
 
-ALICE_MAIN( tutorial2 )
+ALICE_MAIN( tutorial3 )

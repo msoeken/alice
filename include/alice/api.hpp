@@ -35,14 +35,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/hana/for_each.hpp>
-#include <boost/hana/integral_constant.hpp>
-#include <boost/hana/prepend.hpp>
-#include <boost/hana/range.hpp>
-#include <boost/hana/size.hpp>
-#include <boost/hana/tuple.hpp>
-#include <boost/hana/type.hpp>
-
 #include <fmt/format.h>
 
 #include "detail/python.hpp"
@@ -67,21 +59,6 @@ struct tuple_append<T, std::tuple<S...>>
   using type = std::tuple<S..., T>;
 };
 
-template<typename List>
-struct list_to_tuple;
-
-template<>
-struct list_to_tuple<nil>
-{
-  static constexpr auto type = boost::hana::make_tuple();
-};
-
-template<typename Head, typename Tail>
-struct list_to_tuple<cons<Head, Tail>>
-{
-  static constexpr auto type = boost::hana::prepend(list_to_tuple<Tail>::type, boost::hana::type_c<Head>);
-};
-
 template<typename T>
 struct tuple_to_cli;
 
@@ -96,17 +73,6 @@ struct list_maker_key : list_maker_key<T, N - 1> {};
 
 template<typename T>
 struct list_maker_key<T, 0> {};
-
-#define _ALICE_START_LIST(name) \
-  struct name##_list_maker {}; \
-  nil list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
-
-#define _ALICE_ADD_TO_LIST(name, type) \
-  cons<type, decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{}))> \
-  list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
-
-#define _ALICE_END_LIST(name) \
-  using name = decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{}));
 
 #define _ALICE_START_LIST2(name) \
   struct name##_list_maker; \
@@ -160,58 +126,46 @@ struct alice_globals
 };
 /*! \endcond */
 
-template<typename CLI, typename... Tags>
+template<typename CLI, typename Tuple, std::size_t Index>
 struct insert_read_commands
 {
-  /* constructor stores reference to CLI instance */
-  insert_read_commands( CLI& cli ) : _cli( cli )
+  insert_read_commands( CLI& cli )
   {
-    cli.set_category( "I/O" );
-  }
+    insert_read_commands<CLI, Tuple, Index - 1> irc( cli );
 
-  template<typename... Indexes>
-  void operator()( Indexes... s )
-  {
-    []( ... ){}( apply<CLI, Tags>( _cli, s )... );
+    using tag_type = std::tuple_element_t<Index - 1, Tuple>;
+    cli.template insert_read_command<tag_type>( fmt::format( "read_{}", alice_globals::get().read_tags[Index - 1] ), alice_globals::get().read_names[Index - 1] );
   }
-
-private:
-  template<typename CCLI, typename T>
-  static int apply( CCLI& cli, std::size_t idx )
-  {
-    cli.template insert_read_command<T>( fmt::format( "read_{}", alice_globals::get().read_tags[idx] ), alice_globals::get().read_names[idx] );
-    return 0;
-  }
-
-private:
-  CLI& _cli;  
 };
 
-template<typename CLI, typename... Tags>
-struct insert_write_commands
+template<typename CLI, typename Tuple>
+struct insert_read_commands<CLI, Tuple, 0>
 {
-  /* constructor stores reference to CLI instance */
-  insert_write_commands( CLI& cli ) : _cli( cli )
+  insert_read_commands( CLI& cli )
   {
     cli.set_category( "I/O" );
   }
+};
 
-  template<typename... Indexes>
-  void operator()( Indexes... s )
+template<typename CLI, typename Tuple, std::size_t Index>
+struct insert_write_commands
+{
+  insert_write_commands( CLI& cli )
   {
-    []( ... ){}( apply<CLI, Tags>( _cli, s )... );
-  }
+    insert_write_commands<CLI, Tuple, Index - 1> irc( cli );
 
-private:
-  template<typename CCLI, typename T>
-  static int apply( CCLI& cli, std::size_t idx )
+    using tag_type = std::tuple_element_t<Index - 1, Tuple>;
+    cli.template insert_write_command<tag_type>( fmt::format( "write_{}", alice_globals::get().write_tags[Index - 1] ), alice_globals::get().write_names[Index - 1] );
+  }
+};
+
+template<typename CLI, typename Tuple>
+struct insert_write_commands<CLI, Tuple, 0>
+{
+  insert_write_commands( CLI& cli )
   {
-    cli.template insert_write_command<T>( fmt::format( "write_{}", alice_globals::get().write_tags[idx] ), alice_globals::get().write_names[idx] );
-    return 0;
+    cli.set_category( "I/O" );
   }
-
-private:
-  CLI& _cli;  
 };
 
 /*! \brief Returns a one-line string to show when printing store contents
@@ -303,8 +257,8 @@ struct io_##tag##_tag_t \
   } \
 }; \
 io_##tag##_tag_t _##tag##_tag; \
-_ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t) \
-_ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
+_ALICE_ADD_TO_LIST2(alice_read_tags, io_##tag##_tag_t) \
+_ALICE_ADD_TO_LIST2(alice_write_tags, io_##tag##_tag_t)
 
 /*! \brief Registers a read-only file type to alice
 
@@ -323,7 +277,7 @@ struct io_##tag##_tag_t \
   } \
 }; \
 io_##tag##_tag_t _##tag##_tag; \
-_ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t)
+_ALICE_ADD_TO_LIST2(alice_read_tags, io_##tag##_tag_t)
 
 /*! \brief Registers a write-only file type to alice
 
@@ -342,7 +296,7 @@ struct io_##tag##_tag_t \
   } \
 }; \
 io_##tag##_tag_t _##tag##_tag; \
-_ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
+_ALICE_ADD_TO_LIST2(alice_write_tags, io_##tag##_tag_t)
 
 ////////////////////////////////////////////////////////////////////////////////
 // convert
@@ -386,7 +340,7 @@ struct insert_commands
 template<typename CLI, typename Tuple>
 struct insert_commands<CLI, Tuple, 0>
 {
-  insert_commands( CLI& cli )
+  insert_commands( CLI& )
   {
   }
 };
@@ -447,31 +401,21 @@ _ALICE_ADD_TO_LIST2(alice_commands, name##_command)
 #define ALICE_INIT \
 _ALICE_START_LIST2( alice_stores ) \
 _ALICE_START_LIST2( alice_commands ) \
-_ALICE_START_LIST( alice_read_tags ) \
-_ALICE_START_LIST( alice_write_tags )
+_ALICE_START_LIST2( alice_read_tags ) \
+_ALICE_START_LIST2( alice_write_tags )
 
 #define _ALICE_MAIN_BODY(prefix) \
   using namespace alice; \
   _ALICE_END_LIST2( alice_stores ) \
   _ALICE_END_LIST2( alice_commands ) \
-  _ALICE_END_LIST( alice_read_tags ) \
-  _ALICE_END_LIST( alice_write_tags ) \
+  _ALICE_END_LIST2( alice_read_tags ) \
+  _ALICE_END_LIST2( alice_write_tags ) \
   \
   using cli_t = tuple_to_cli<alice_stores>::type; \
   cli_t cli( #prefix ); \
   \
-  constexpr auto rtags = list_to_tuple<alice_read_tags>::type; \
-  constexpr auto rtags_with_cli = boost::hana::prepend( rtags, boost::hana::type_c<cli_t> ); \
-  using insert_read_commands_t = decltype( boost::hana::unpack( rtags_with_cli, boost::hana::template_<insert_read_commands> ) )::type; \
-  insert_read_commands_t irc( cli ); \
-  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( rtags ) ), irc ); \
-  \
-  constexpr auto wtags = list_to_tuple<alice_write_tags>::type; \
-  constexpr auto wtags_with_cli = boost::hana::prepend( wtags, boost::hana::type_c<cli_t> ); \
-  using insert_write_commands_t = decltype( boost::hana::unpack( wtags_with_cli, boost::hana::template_<insert_write_commands> ) )::type; \
-  insert_write_commands_t iwc( cli ); \
-  boost::hana::unpack( boost::hana::make_range( boost::hana::size_c<0>, boost::hana::size( wtags ) ), iwc ); \
-  \
+  insert_read_commands<cli_t, alice_read_tags, std::tuple_size<alice_read_tags>::value> irc( cli ); \
+  insert_write_commands<cli_t, alice_write_tags, std::tuple_size<alice_write_tags>::value> iwc( cli ); \
   insert_commands<cli_t, alice_commands, std::tuple_size<alice_commands>::value> ic( cli );
 /*! \endcond */
 

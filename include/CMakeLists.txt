@@ -4,6 +4,7 @@ target_include_directories(alice INTERFACE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(alice INTERFACE alice_fmt)
 target_link_libraries(alice INTERFACE CLI11)
 target_link_libraries(alice INTERFACE alice_json)
+target_link_libraries(alice INTERFACE alice_any)
 
 # library for Python bindings
 add_library(alice_python INTERFACE)

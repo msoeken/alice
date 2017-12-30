@@ -45,11 +45,6 @@ namespace alice
 
 /*! \cond PRIVATE */
 /* dynamic compile-time list construction based on https://stackoverflow.com/a/24092000 */
-struct nil {};
-
-template<typename T, typename U>
-struct cons {};
-
 template<typename T, typename Tuple>
 struct tuple_append;
 
@@ -74,15 +69,15 @@ struct list_maker_key : list_maker_key<T, N - 1> {};
 template<typename T>
 struct list_maker_key<T, 0> {};
 
-#define _ALICE_START_LIST2(name) \
+#define _ALICE_START_LIST(name) \
   struct name##_list_maker; \
   std::tuple<> list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
 
-#define _ALICE_ADD_TO_LIST2(name, added_type) \
+#define _ALICE_ADD_TO_LIST(name, added_type) \
   tuple_append<added_type, decltype( list_maker_helper_( list_maker_key<name##_list_maker, __COUNTER__>{} ) )>::type \
   list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>);
 
-#define _ALICE_END_LIST2(name) \
+#define _ALICE_END_LIST(name) \
   using name = decltype(list_maker_helper_(list_maker_key<name##_list_maker, __COUNTER__>{})); 
 /*! \endcond */
 
@@ -108,7 +103,7 @@ struct store_info<type> \
   static constexpr const char* name = _name; \
   static constexpr const char* name_plural = _name_plural; \
 }; \
-_ALICE_ADD_TO_LIST2(alice_stores, type)
+_ALICE_ADD_TO_LIST(alice_stores, type)
 
 /*! \cond PRIVATE */
 /* some global data structure */
@@ -257,8 +252,8 @@ struct io_##tag##_tag_t \
   } \
 }; \
 io_##tag##_tag_t _##tag##_tag; \
-_ALICE_ADD_TO_LIST2(alice_read_tags, io_##tag##_tag_t) \
-_ALICE_ADD_TO_LIST2(alice_write_tags, io_##tag##_tag_t)
+_ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t) \
+_ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
 
 /*! \brief Registers a read-only file type to alice
 
@@ -277,7 +272,7 @@ struct io_##tag##_tag_t \
   } \
 }; \
 io_##tag##_tag_t _##tag##_tag; \
-_ALICE_ADD_TO_LIST2(alice_read_tags, io_##tag##_tag_t)
+_ALICE_ADD_TO_LIST(alice_read_tags, io_##tag##_tag_t)
 
 /*! \brief Registers a write-only file type to alice
 
@@ -296,7 +291,7 @@ struct io_##tag##_tag_t \
   } \
 }; \
 io_##tag##_tag_t _##tag##_tag; \
-_ALICE_ADD_TO_LIST2(alice_write_tags, io_##tag##_tag_t)
+_ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
 
 ////////////////////////////////////////////////////////////////////////////////
 // convert
@@ -371,7 +366,7 @@ name##_command_init _##name##_command_init;
 #define ALICE_COMMAND(name, category, description) \
 _ALICE_COMMAND_INIT(name, category) \
 class name##_command; \
-_ALICE_ADD_TO_LIST2(alice_commands, name##_command) \
+_ALICE_ADD_TO_LIST(alice_commands, name##_command) \
 class name##_command : public command \
 { \
 public: \
@@ -395,21 +390,21 @@ void name##_command::execute()
  */
 #define ALICE_ADD_COMMAND(name, category) \
 _ALICE_COMMAND_INIT(name, category) \
-_ALICE_ADD_TO_LIST2(alice_commands, name##_command)
+_ALICE_ADD_TO_LIST(alice_commands, name##_command)
 
 /*! \cond PRIVATE */
 #define ALICE_INIT \
-_ALICE_START_LIST2( alice_stores ) \
-_ALICE_START_LIST2( alice_commands ) \
-_ALICE_START_LIST2( alice_read_tags ) \
-_ALICE_START_LIST2( alice_write_tags )
+_ALICE_START_LIST( alice_stores ) \
+_ALICE_START_LIST( alice_commands ) \
+_ALICE_START_LIST( alice_read_tags ) \
+_ALICE_START_LIST( alice_write_tags )
 
 #define _ALICE_MAIN_BODY(prefix) \
   using namespace alice; \
-  _ALICE_END_LIST2( alice_stores ) \
-  _ALICE_END_LIST2( alice_commands ) \
-  _ALICE_END_LIST2( alice_read_tags ) \
-  _ALICE_END_LIST2( alice_write_tags ) \
+  _ALICE_END_LIST( alice_stores ) \
+  _ALICE_END_LIST( alice_commands ) \
+  _ALICE_END_LIST( alice_read_tags ) \
+  _ALICE_END_LIST( alice_write_tags ) \
   \
   using cli_t = tuple_to_cli<alice_stores>::type; \
   cli_t cli( #prefix ); \

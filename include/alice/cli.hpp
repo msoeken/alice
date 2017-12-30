@@ -38,7 +38,7 @@
 #include <regex>
 #include <string>
 
-#include <CLI/CLI.hpp>
+#include <CLI11.hpp>
 #include <fmt/format.h>
 
 #include "command.hpp"

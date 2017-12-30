@@ -40,7 +40,7 @@
 #include <vector>
 
 #include <any.hpp>
-#include <CLI/CLI.hpp>
+#include <CLI11.hpp>
 #include <fmt/format.h>
 #include <json.hpp>
 

@@ -1,9 +1,6 @@
 [submodule "test/Catch2"]
 	path = test/Catch2
 	url = https://github.com/catchorg/Catch2.git
-[submodule "lib/CLI11"]
-	path = lib/CLI11
-	url = https://github.com/CLIUtils/CLI11.git
 [submodule "lib/pybind11"]
 	path = lib/pybind11
 	url = https://github.com/pybind/pybind11.git

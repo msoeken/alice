@@ -37,7 +37,6 @@
 #endif
 #include "cli.hpp"
 #include "command.hpp"
-#include "logging.hpp"
 #include "readline.hpp"
 #include "store.hpp"
 #include "store_api.hpp"

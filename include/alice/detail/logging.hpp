@@ -45,6 +45,9 @@
 namespace alice
 {
 
+namespace detail
+{
+
 class logger
 {
 public:
@@ -80,4 +83,6 @@ private:
   std::string _filename;
   nlohmann::json array = nlohmann::json::array();
 };
+
+}
 }

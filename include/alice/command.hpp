@@ -45,7 +45,7 @@
 #include <json.hpp>
 
 #include "detail/utils.hpp"
-#include "logging.hpp"
+#include "detail/logging.hpp"
 #include "store.hpp"
 #include "store_api.hpp"
 
@@ -181,7 +181,7 @@ private:
   std::unordered_map<std::string, std::string> _aliases;
 
   bool log{false};
-  alice::logger logger;
+  alice::detail::logger logger;
   bool quit{false};
 
   std::ostream* _out = &std::cout;

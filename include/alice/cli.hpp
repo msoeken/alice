@@ -42,8 +42,8 @@
 #include <fmt/format.h>
 
 #include "command.hpp"
-#include "logging.hpp"
 #include "readline.hpp"
+#include "detail/logging.hpp"
 
 #include "commands/alias.hpp"
 #include "commands/convert.hpp"

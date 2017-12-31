@@ -39,7 +39,6 @@
 #include <json.hpp>
 
 #include "command.hpp"
-#include "logging.hpp"
 
 namespace alice
 {
@@ -47,6 +46,52 @@ namespace alice
 class command;
 
 /*! \brief Empty prototype class for store information
+
+  You need to specialize this struct in order declare a new store type for the
+  CLI.  In this specialization five ``static constexpr const char*`` variables
+  must be defined:
+
+  - ``key``: A unique key for internal storing in the ``environment``
+  - ``option``: A long option name for commands (without dashes)
+  - ``mnemonic``: A single character for short option (without dash, cannot be ``n`` or ``v``)
+  - ``name``: A singular name that is used in help texts
+  - ``name_plural``: A plural name that is used in help texts
+
+  \verbatim embed:rst
+      
+      .. note::
+      
+        Make sure to specialize ``store_info`` inside the ``alice`` namespace.  You
+        can use the :c:macro:`ALICE_ADD_STORE` macro instead of the partial
+        specialization.  Also :c:macro:`ALICE_MAIN` will automatically pick up all
+        stores that were defined using :c:macro:`ALICE_ADD_STORE`.
+
+      Here is an example code to define a store type for a fictional type ``graph``:
+
+      .. code-block:: c++
+      
+         namespace alice {
+        
+         template<>
+         struct store_info<graph>
+         {
+           static constexpr const char* key = "graph";
+           static constexpr const char* option = "graph";
+           static constexpr const char* mnemonic = "g";
+           static constexpr const char* name = "graph";
+           static constexpr const char* name = "graphs";
+         };
+
+         }
+
+      You can then use this data structure as part of the CLI when listing its type in the
+      declaration of ``cli``:
+
+      .. code-block:: c++
+
+         alice::cli<..., graph, ...> cli( "prefix" );
+
+  \endverbatim
  */
 template<typename StoreType>
 struct store_info

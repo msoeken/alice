@@ -261,12 +261,13 @@ public:
                 dash), multiple option names are separated by a comma.
     \param value Reference where option value is store
     \param description Description for the help text
+    \param defaulted Use initial value to ``value`` as default value
     \return Option instance
   */
   template<typename T>
-  inline auto add_option( const std::string& name, T& value, const std::string& description )
+  inline auto add_option( const std::string& name, T& value, const std::string& description, bool defaulted = false )
   {
-    return opts.add_option( name, value, description );
+    return opts.add_option( name, value, description, defaulted );
   }
 
   /*! \brief Adds an anonymous option to the command
@@ -409,10 +410,8 @@ protected:
   }
   /*! \endcond */
 
-protected:
-  environment::ptr env;
-
 public:
+  environment::ptr env;
   CLI::App opts;
 
 private:

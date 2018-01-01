@@ -369,7 +369,7 @@ public:
 #if defined ALICE_PYTHON
 public:
 #else
-private:
+protected:
 #endif
   /*! \cond PRIVATE */
   virtual bool run( const std::vector<std::string>& args )

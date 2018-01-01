@@ -24,21 +24,25 @@
  */
 
 /*
-  \file alice.hpp
-  \brief Main header for alice
+  \file rules.hpp
+  \brief Some useful validity rules
 
   \author Mathias Soeken
 */
 
 #pragma once
 
-#if !defined(ALICE_NOAPI)
-#include "api.hpp"
-#endif
-#include "cli.hpp"
-#include "command.hpp"
-#include "readline.hpp"
-#include "rules.hpp"
-#include "store.hpp"
-#include "store_api.hpp"
+#include <fmt/format.h>
 
+#include "command.hpp"
+#include "store.hpp"
+
+namespace alice
+{
+template<typename S>
+command::rule_t has_store_element( const environment::ptr& env )
+{
+  auto constexpr name = store_info<S>::name;
+  return { [&]() { return env->store<S>().current_index() >= 0; }, fmt::format( "no current {} available", name ) };
+}
+}

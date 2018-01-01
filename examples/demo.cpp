@@ -76,11 +76,27 @@ ALICE_COMMAND(hello, "Generation", "adds a welcome string to the store")
   strings.extend() = "hello world";
 }
 
-ALICE_COMMAND(upper, "Manipulation", "changes string to upper bound")
+class upper_command : public command
 {
-  auto& str = env->store<std::string>().current();
+  public:
+  upper_command( const environment::ptr& env ) : command( env, "changes string to upper case" )
+  {
+
+  }
+
+  rules_t validity_rules() const
+  {
+    return {has_store_element<std::string>( env )};
+  }
+
+  void execute()
+  {
+    auto& str = env->store<std::string>().current();
   std::transform( str.begin(), str.end(), str.begin(), ::toupper );
-}
+  }
+};
+
+ALICE_ADD_COMMAND( upper, "Manipulation" )
 
 }
 

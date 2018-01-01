@@ -27,6 +27,7 @@ Welcome to alice's documentation!
 
    macro_api
    store_api
+   cli
    command
    environment
    store

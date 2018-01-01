@@ -59,11 +59,28 @@
 namespace alice
 {
 
+/*! \brief CLI main class
+
+  The stores of a CLI are passed as type arguments to ``cli``.  For example, if
+  the CLI has stores for Graphs and Trees which are handled by classes ``graph``
+  and ``tree``, respectively, the class instantiation is ``cli<graph, tree>``.
+*/
 template<class... S>
 class cli
 {
 public:
-  cli( const std::string& prefix )
+  /*! \brief Default constructor
+
+    Initializes the CLI with a prefix that is used as a command prefix in
+    stand-alone application mode and as a module name when build as Python
+    module.
+
+    The constructor will add the default commands to the CLI.  If no store type
+    is specified, then no store-related command will be added.
+
+    \param prefix Either command prefix or module name (depending on build mode)
+  */
+  explicit cli( const std::string& prefix )
       : env( std::make_shared<environment>() ),
         prefix( prefix )
   {
@@ -92,29 +109,84 @@ public:
     opts.add_option( "-l,--log", logname, "logs the execution and stores many statistical information" );
   }
 
+  /*! \brief Sets the current category
+
+    This category will be used as category for all commands that are added
+    afterwards, until this method is called again with a different argument.
+
+    The categories are used in the ``help`` command to organize the commands.
+
+    The macros :c:macro:`ALICE_COMMAND` and :c:macro:`ALICE_ADD_COMMAND` will
+    automatically call this method.
+
+    \param _category Category name
+  */
   void set_category( const std::string& _category )
   {
     category = _category;
   }
 
+  /*! \brief Inserts a command
+
+    Inserts a command (as a shared pointer) to the CLI.
+
+    The macro :c:macro:`ALICE_ADD_COMMAND` will automatically call this method
+    with a convention that a command with name ``<name>`` must be called
+    ``<name>_command``.
+
+    \param name Name of the command
+    \param cmd Shared pointer to a command instance
+  */
   void insert_command( const std::string& name, const std::shared_ptr<command>& cmd )
   {
     env->_categories[category].push_back( name );
     env->_commands[name] = cmd;
   }
 
+  /*! \brief Inserts a read command
+
+    Inserts a read command for a given file tag.  The name of the command can be
+    arbitrary but the default convention is to prefix it with ``read_``.  The
+    macro :c:macro:`ALICE_ADD_FILE_TYPE` together :c:macro:`ALICE_READ_FILE`
+    will automatically add a read command called ``read_<tagname>``.
+
+    \param name Name of the command
+    \param label Label for the file type (used in help string)
+  */
   template<typename Tag>
   void insert_read_command( const std::string& name, const std::string& label )
   {
     insert_command( name, std::make_shared<read_io_command<Tag, S...>>( env, label ) );
   }
 
+  /*! \brief Inserts a write command
+
+    Inserts a writ command for a given file tag.  The name of the command can be
+    arbitrary but the default convention is to prefix it with ``write_``.  The
+    macro :c:macro:`ALICE_ADD_FILE_TYPE` together :c:macro:`ALICE_WRITE_FILE`
+    will automatically add a write command called ``write_<tagname>``.
+
+    \param name Name of the command
+    \param label Label for the file type (used in help string)
+  */
   template<typename Tag>
   void insert_write_command( const std::string& name, const std::string& label )
   {
     insert_command( name, std::make_shared<write_io_command<Tag, S...>>( env, label ) );
   }
 
+  /*! \brief Runs the shell
+
+    This function is only used if the CLI is used in stand-alone mode, not when
+    used as Python module.  The values ``argc`` and ``argv`` can be taken from
+    the ``main`` function.  For some flags, such as ``-f`` and ``-c``, the CLI
+    will read commands from a file or the command line, respectively, and then
+    stop (unless flag ``-i`` is set).  Otherwise, the CLI will enter a loop that
+    accepts commands as user inputer.
+
+    \param argc Number of arguments (incl. program name, like ``argc`` in ``main``)
+    \param argv Argument values (like ``argv`` in ``main``)
+  */
   int run( int argc, char** argv )
   {
     try
@@ -195,6 +267,7 @@ public:
     return 0;
   }
 
+/*! \ifcond PRIVATE */
 private:
   bool execute_line( const std::string& line )
   {
@@ -357,5 +430,6 @@ private:
   std::string command, file, logname;
 
   unsigned counter{1u};
+/*! \endcond */
 };
 }

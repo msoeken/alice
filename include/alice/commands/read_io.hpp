@@ -78,7 +78,7 @@ int add_read_io_option_helper( command& cmd, unsigned& option_count, std::string
 }
 
 template<typename Tag, typename S>
-int read_io_helper( command& cmd, const std::string& default_option, const environment::ptr& env, const std::string& filename )
+int read_io_helper( const command& cmd, const std::string& default_option, const environment::ptr& env, const std::string& filename )
 {
   constexpr auto option = store_info<S>::option;
 

@@ -57,7 +57,7 @@ int add_write_io_option_helper( command& cmd, unsigned& option_count, std::strin
 }
 
 template<typename Tag, typename S>
-int write_io_helper( command& cmd, const std::string& default_option, const environment::ptr& env, const std::string& filename )
+int write_io_helper( const command& cmd, const std::string& default_option, const environment::ptr& env, const std::string& filename )
 {
   constexpr auto option = store_info<S>::option;
   constexpr auto name = store_info<S>::name;

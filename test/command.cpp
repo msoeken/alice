@@ -46,7 +46,7 @@ bool can_write<std::string, io_file_tag_t>( command& cmd )
 }
 
 template<>
-void write<std::string, io_file_tag_t>( const std::string& element, const std::string& filename, command& cmd )
+void write<std::string, io_file_tag_t>( const std::string& element, const std::string& filename, const command& cmd )
 {
   if ( cmd.is_set( "-p" ) )
   {

@@ -315,7 +315,7 @@ public:
     \return Option value
   */
   template<typename T = std::string>
-  inline T option_value( const std::string& name, const T& default_value = T() )
+  inline T option_value( const std::string& name, const T& default_value = T() ) const
   {
     const auto it = option_index.find( name );
     if ( it == option_index.end() )

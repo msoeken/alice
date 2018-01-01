@@ -209,7 +209,7 @@ inline void print<type>( std::ostream& os, const type& element )
 template<> \
 inline bool can_read<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
 template<> \
-inline type read<type, io_##tag##_tag_t>( const std::string& filename, command& cmd )
+inline type read<type, io_##tag##_tag_t>( const std::string& filename, const command& cmd )
 
 /*! \brief Write to a file from a store
 
@@ -228,7 +228,7 @@ inline type read<type, io_##tag##_tag_t>( const std::string& filename, command& 
 template<> \
 inline bool can_write<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
 template<> \
-inline void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, command& cmd )
+inline void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, const command& cmd )
 
 /*! \brief Registers a file type to alice
 

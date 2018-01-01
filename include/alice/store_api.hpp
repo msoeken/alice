@@ -171,7 +171,7 @@ bool can_read( command& cmd )
   \param cmd Reference to command, e.g., to check whether custom options are set
 */
 template<typename StoreType, typename Tag>
-StoreType read( const std::string& filename, command& cmd )
+StoreType read( const std::string& filename, const command& cmd )
 {
   (void)filename;
   (void)cmd;
@@ -203,7 +203,7 @@ bool can_write( command& cmd )
   \param cmd Reference to command, e.g., to check whether custom options are set
 */
 template<typename StoreType, typename Tag>
-void write( const StoreType& element, const std::string& filename, command& cmd )
+void write( const StoreType& element, const std::string& filename, const command& cmd )
 {
   (void)element;
   (void)filename;

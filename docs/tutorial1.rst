@@ -23,10 +23,12 @@ some commands to the prompt::
 
     tutorial1> help
     General commands:
-     alias            help             quit
+     alias            help             quit             set
 
-It shows that the shell has 3 commands: ``alias``, ``help``, and ``quit``.
-Further information about each commands can be obtained by calling it with the
-``-h`` flag. We'll get to ``alias`` later.  Command ``help`` lists all available
-commands, and it also allows to search through the help texts of all commands.
-Command ``quit`` quits the program.
+It shows that the shell has 4 commands: ``alias``, ``help``, ``quit``, and
+``set``. Further information about each commands can be obtained by calling it
+with the ``-h`` flag. We'll get to ``alias`` later.  Command ``help`` lists all
+available commands, and it also allows to search through the help texts of all
+commands. Command ``quit`` quits the program.  Command ``set`` can set
+environment variables that can be used by other programs.  Possible variables
+and values are listed in the help strings to such commands.

@@ -23,7 +23,8 @@ used to generate help strings in store-related commands.  Let's have a look what
     
     General commands:
      alias            convert          current          help
-     print            ps               quit             store
+     print            ps               quit             select
+     store
 
 First, we see two categories of commands, the first one (`Generation commands`)
 listing the custom command ``hello``.  We'll get to that one in a bit.  There

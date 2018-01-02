@@ -53,6 +53,7 @@
 #include "commands/ps.hpp"
 #include "commands/quit.hpp"
 #include "commands/read_io.hpp"
+#include "commands/set.hpp"
 #include "commands/store.hpp"
 #include "commands/write_io.hpp"
 
@@ -91,6 +92,7 @@ public:
     insert_command( "alias", std::make_shared<alias_command>( env ) );
     insert_command( "help", std::make_shared<help_command>( env ) );
     insert_command( "quit", std::make_shared<quit_command>( env ) );
+    insert_command( "set", std::make_shared<set_command>( env ) );
 
     if ( sizeof...( S ) )
     {

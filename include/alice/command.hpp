@@ -149,6 +149,20 @@ public:
     return _aliases;
   }
 
+  /*! \brief Get environment variable
+
+    Finds an environment variable or returns a default value. Variables can be
+    set with the ``set`` command.
+
+    \param key Key for the value
+    \param default_value Default value
+  */
+  inline const std::string& variable( const std::string& key, const std::string& default_value = std::string() ) const
+  {
+    const auto it = _variables.find( key );
+    return it != _variables.end() ? it->second : default_value;
+  }
+
 private:
   /*! \brief Adds store to environment */
   template<typename T>
@@ -165,11 +179,14 @@ private:
   template<class... S>
   friend class cli;
 
+  /* alias command is friend to insert aliases */
+  friend class alias_command;
+
   /* help command is friend to sort categories */
   friend class help_command;
 
-  /* alias command is friend to insert aliases */
-  friend class alias_command;
+  /* set command is friend to access variables */
+  friend class set_command;
 
   /* quit command is friend to update quit flag */
   friend class quit_command;
@@ -179,6 +196,7 @@ private:
   std::unordered_map<std::string, std::shared_ptr<command>> _commands;
   std::unordered_map<std::string, std::vector<std::string>> _categories;
   std::unordered_map<std::string, std::string> _aliases;
+  std::unordered_map<std::string, std::string> _variables;
 
   bool log{false};
   alice::detail::logger logger;

@@ -50,10 +50,15 @@ namespace alice
 class readline_wrapper
 {
 public:
-  readline_wrapper( const environment::ptr& env )
+  static readline_wrapper& instance()
   {
-    instance = this;
+    static readline_wrapper _instance;
 
+    return _instance;
+  }
+
+  void init( const environment::ptr& env )
+  {
     for ( const auto& p : env->commands() )
     {
       command_names.push_back( p.first );
@@ -86,9 +91,10 @@ public:
 private:
   static char** readline_completion_s( const char* text, int start, int end )
   {
+    (void)end;
     if ( start == 0 )
     {
-      return rl_completion_matches( text, []( const char* text, int state ) { return instance->command_iterator( text, state ); } );
+      return rl_completion_matches( text, []( const char* text, int state ) { return instance().command_iterator( text, state ); } );
     }
     else
     {
@@ -120,11 +126,8 @@ private:
   }
 
 private:
-  static readline_wrapper* instance;
   std::vector<std::string> command_names;
 };
-
-readline_wrapper* readline_wrapper::instance = nullptr;
 }
 
 #else
@@ -135,8 +138,16 @@ namespace alice
 class readline_wrapper
 {
 public:
-  readline_wrapper( const environment::ptr& )
+  static readline_wrapper& instance()
   {
+    static readline_wrapper _instance;
+
+    return _instance;
+  }
+
+  void init( const environment::ptr& env )
+  {
+    (void)env;
   }
 
   bool read_command_line( const std::string& prefix, std::string& line )

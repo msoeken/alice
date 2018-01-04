@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 option(ALICE_EXAMPLES "Build examples" OFF)
 option(ALICE_TEST "Build tests" OFF)
 
-set(ALICE_READLINE_LIBRARY NATIVE CACHE STRING "Readline library")
+set(ALICE_READLINE_LIBRARY READLINE CACHE STRING "Readline library")
 set_property(CACHE ALICE_READLINE_LIBRARY PROPERTY STRINGS NATIVE READLINE)
 
 # some specific compiler definitions

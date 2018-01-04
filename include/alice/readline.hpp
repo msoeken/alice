@@ -54,7 +54,7 @@ public:
   {
     instance = this;
 
-    for ( const auto& p : env->commands )
+    for ( const auto& p : env->commands() )
     {
       command_names.push_back( p.first );
     }

@@ -42,8 +42,8 @@
 #include <fmt/format.h>
 
 #include "command.hpp"
-#include "readline.hpp"
 #include "detail/logging.hpp"
+#include "readline.hpp"
 
 #include "commands/alias.hpp"
 #include "commands/convert.hpp"
@@ -206,7 +206,7 @@ public:
       return 2;
     }
 
-    // read_aliases();
+    read_aliases();
 
     if ( opts.count( "-l" ) )
     {
@@ -269,7 +269,7 @@ public:
     return 0;
   }
 
-/*! \ifcond PRIVATE */
+  /*! \ifcond PRIVATE */
 private:
   bool execute_line( const std::string& line )
   {
@@ -352,13 +352,16 @@ private:
     return true;
   }
 
-  bool process_file( const std::string& filename, bool echo )
+  bool process_file( const std::string& filename, bool echo, bool error_on_not_found = true )
   {
     std::ifstream in( filename.c_str(), std::ifstream::in );
 
     if ( !in.good() )
     {
-      env->out() << "[e] file " << filename << " not found" << std::endl;
+      if ( error_on_not_found )
+      {
+        env->out() << "[e] file " << filename << " not found" << std::endl;
+      }
       return true;
     }
 
@@ -398,6 +401,22 @@ private:
     }
   }
 
+  void read_aliases()
+  {
+#if defined(ALICE_ENV_HOME)
+#define ALICE_STRINGIFY(x) #x
+#define ALICE_TOSTRING(x) ALICE_STRINGIFY(x)
+    std::string env = ALICE_TOSTRING( ALICE_ENV_HOME );
+    if ( env.empty() ) { return;}
+
+    if ( auto* path = std::getenv( env.c_str() ) )
+    {
+      std::string alias_path = fmt::format( "{}/alias", path );
+      process_file( alias_path, false, false );
+    }
+#endif
+  }
+
   std::string preprocess_alias( const std::string& line )
   {
     std::smatch m;
@@ -432,6 +451,6 @@ private:
   std::string command, file, logname;
 
   unsigned counter{1u};
-/*! \endcond */
+  /*! \endcond */
 };
 }

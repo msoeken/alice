@@ -1,13 +1,9 @@
 # No debugging and optimization for examples
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -DNDEBUG")
 
-function(add_example name)
-  add_executable(${name} ${name}.cpp)
-  target_link_libraries(${name} alice)
-endfunction()
-
-add_example(demo)
-
+add_executable(demo demo.cpp)
+target_link_libraries(demo alice)
+target_compile_definitions(demo PUBLIC ALICE_ENV_HOME=ALICE_HOME)
 add_alice_python_module(demo demo.cpp)
 
 # tutorial 1

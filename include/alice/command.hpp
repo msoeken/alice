@@ -39,13 +39,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include <any.hpp>
 #include <CLI11.hpp>
+#include <any.hpp>
 #include <fmt/format.h>
 #include <json.hpp>
 
-#include "detail/utils.hpp"
 #include "detail/logging.hpp"
+#include "detail/utils.hpp"
 #include "store.hpp"
 #include "store_api.hpp"
 
@@ -396,12 +396,27 @@ protected:
     opts.reset();
 
     /* copy arguments (seems important to get the right grouping of arguments) */
-    std::vector<char*> _args( args.size() );
-    std::transform( args.begin(), args.end(), _args.begin(), []( const auto& s ) { return const_cast<char*>( s.c_str() ); } );
+    std::vector<std::string> _args( args.size() - 1 );
+    std::transform( args.rbegin(), args.rend() - 1, _args.begin(), []( const auto& s ) {
+      if ( s.size() > 2 && s.front() == '"' && s.back() == '"' )
+      {
+        return s.substr( 1, s.size() - 2 );
+      }
+
+      const auto c_eq = s.find( '=' );
+      const auto c_q = s.find( '"' );
+
+      if ( c_eq != std::string::npos&& c_q != std::string::npos&& c_q == c_eq + 1 && s.back() == '"' )
+      {
+        return s.substr( 0, c_eq + 1 ) + s.substr( c_q + 1, s.size() - c_q - 2 );
+      }
+
+      return s;
+    } );
 
     try
     {
-      opts.parse( _args.size(), &_args[0] );
+      opts.parse( _args );
     }
     catch ( const CLI::CallForHelp& e )
     {

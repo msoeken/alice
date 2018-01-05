@@ -266,6 +266,26 @@ public:
     return opts.add_flag( name, description );
   }
 
+  /*! \brief Adds a flag with variable binding to the command
+
+    This function should be called in the constructor when the program options
+    are set up.  See https://github.com/CLIUtils/CLI11#adding-options for more
+    information.
+
+    This is a shortcut to ``opts.add_flag``.
+
+    \param name Flag names (short flags are prefixed with a single dash, long
+                flags with a double dash), multiple flag names are separated by
+                a comma.
+    \param value Reference where flag value is stored
+    \param description Description for the help text
+    \return Option instance
+  */
+  inline auto add_flag( const std::string& name, bool& value, const std::string& description )
+  {
+    return opts.add_flag( name, value, description );
+  }
+
   /*! \brief Adds an option to the command
 
     This function should be called in the constructor when the program options
@@ -277,7 +297,7 @@ public:
     \param name Option names (short options are prefixed with a single dash,
                 long options with a double dash, positional options without any
                 dash), multiple option names are separated by a comma.
-    \param value Reference where option value is store
+    \param value Reference where option value is stored
     \param description Description for the help text
     \param defaulted Use initial value to ``value`` as default value
     \return Option instance

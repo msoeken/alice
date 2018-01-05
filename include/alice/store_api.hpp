@@ -98,7 +98,14 @@ struct store_info
 {
 };
 
-/*! \brief Produce short one-line description of store element */
+/*! \brief Produce short one-line description of store element
+
+  \verbatim embed:rst
+      You can use :c:macro:`ALICE_DESCRIBE_STORE` to implement this function.
+  \endverbatim
+
+  \pram element Store element
+*/
 template<typename StoreType>
 std::string to_string( const StoreType& element )
 {
@@ -108,10 +115,12 @@ std::string to_string( const StoreType& element )
 
 /*! \brief Routine to print a store element to an output stream
 
-  This routine is called by the `print` command.
+  \verbatim embed:rst
+      This routine is called by the `print` command.  You can use
+      :c:macro:`ALICE_PRINT_STORE` to implement this function.
+  \endverbatim
 
-  \param out Output stream
-  \param element Store element
+  \param out Output stream \param element Store element
  */
 template<typename StoreType>
 void print( std::ostream& out, const StoreType& element )
@@ -136,7 +145,9 @@ void print_statistics( std::ostream& out, const StoreType& element )
 
 /*! \brief Statistics to log when calling `ps`
 
-  This routine is called by the `ps` command, if logging is enabled.
+  \verbatim embed:rst
+      This routine is called by the `ps` command, if logging is enabled.
+  \endverbatim
 
   \param element Store element
 */
@@ -149,9 +160,33 @@ nlohmann::json log_statistics( const StoreType& element )
 
 /*! \brief Controls whether a store entry can read from a specific format
 
-  If this function is overriden to return true, then also the function
-  `read` must be impemented for the same store element type and format
-  tag.
+  If this function is overriden to return true, then also the function `read`
+  must be impemented for the same store element type and format tag.
+
+  \verbatim embed:rst
+      You can use :c:macro:`ALICE_READ_FILE` to implement this function together
+      with ``alice::read``.  However, if you need custom command line
+      arguments, the macro cannot be used and one needs to specialize using these
+      functions as described by the following example.
+
+      .. code-block:: c++
+
+         template<>
+         bool can_read<std::string>( command& cmd )
+         {
+           cmd.add_flag( "--flag", "some flag" );
+           cmd.add_option<std::string>( "--option", "an option stored in a string" );
+         }
+
+         template<>
+         std::string read<std::string>( const std::string& filename, const command& cmd )
+         {
+           auto flag = cmd.is_set( "flag" );
+           auto option = cmd.option_value<std::string>( "option" );
+
+           // read the file and return a string...
+         }
+  \endverbatim
 
   \param cmd Mutable reference to command, e.g., to add custom options
 */
@@ -164,8 +199,9 @@ bool can_read( command& cmd )
 
 /*! \brief Reads from a format and returns store element
 
-  This function must be enabled by overriding the `can_read` function
-  for the same store element type and format tag.
+  This function must be enabled by overriding the `can_read` function for the
+  same store element type and format tag.  See `can_read` for more details and
+  an example.
 
   \param filename Filename to read from
   \param cmd Reference to command, e.g., to check whether custom options are set
@@ -182,7 +218,8 @@ StoreType read( const std::string& filename, const command& cmd )
 
   If this function is overriden to return true, then also the function
   `write` must be impemented for the same store element type and
-  format tag.
+  format tag.  See `can_read` for an example which can easily be adapted
+  for `can_write` and `write`.
 
   \param cmd Mutable reference to command, e.g., to add custom options
 */
@@ -215,6 +252,10 @@ void write( const StoreType& element, const std::string& filename, const command
 
   If this function is overriden to return true, then also the function
   `convert` must be implemented for the same store types.
+
+  \verbatim embed:rst
+      You can use :c:macro:`ALICE_CONVERT` to implement this function together with ``convert``.
+  \endverbatim
  */
 template<typename SourceStoreType, typename DestStoreType>
 bool can_convert()
@@ -226,6 +267,10 @@ bool can_convert()
 
   This function must be enabled by overriding the `can_convert`
   function for the same store element types.
+
+  \verbatim embed:rst
+      You can use :c:macro:`ALICE_CONVERT` to implement this function together with ``can_convert``.
+  \endverbatim
 
   \param element Store element to convert
   \return Converted store element

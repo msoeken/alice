@@ -210,8 +210,18 @@ private:
 class command
 {
 public:
-  using rule_t = std::pair<std::function<bool()>, std::string>;
-  using rules_t = std::vector<rule_t>;
+  /*! \brief Rule
+
+    A rule consists of a nullary predicate (validator) and a string (error
+    message).  The validator should return `true` in the correct case.
+  */
+  using rule = std::pair<std::function<bool()>, std::string>;
+
+  /*! \brief Rules
+
+    Vector of rules.
+  */
+  using rules = std::vector<rule>;
 
   /*! \brief Default constructor
 
@@ -230,17 +240,72 @@ public:
   }
 
 protected:
-  /*! \brief Returns rules to check validity of command line arguments */
-  virtual rules_t validity_rules() const { return {}; }
+  /*! \brief Returns rules to check validity of command line arguments  
 
-  /*! \brief Executes the command */
+    This returns a vector of `rule` objects (`rules`), which are pairs of a
+    nullary predicate (Function with `bool` return value and no arguments) and
+    an error message as string.  For each pair, in order of their position in
+    the vector, the predicate is evaluated.  If any of the predicates evalutes
+    to `false`, the command will not be executed and the error message will be
+    printed.
+
+    By default, an empty vector is returned.
+
+    The following code checks that a store element is present for `std::string`
+    and that not both flags `-a` and `-b` are set at the same time.  For the
+    first check, a predefined rule can be used.  Note also that the CLI11
+    interface allows to put several checks on single options (see
+    https://github.com/CLIUtils/CLI11#adding-options).
+
+    \verbatim embed:rst
+        .. code-block:: c++
+        
+           command::rules example_command::validity_rules() const
+           {
+             return {
+               has_store_element<std::string>( env ),
+               {
+                 [this]() { return !( is_set( "a") && is_set( "b") ); },
+                 "not both -a and -b can be set"
+               }
+             };
+           }
+    \endverbatim
+  */
+  virtual rules validity_rules() const { return {}; }
+
+  /*! \brief Executes the command
+  
+    This function must be implemented and contains the main routine that the
+    command executes.  At this point all options have been parsed and the
+    corresponding variables are assigned values.  Also all validity checks have
+    been made.
+  */
   virtual void execute() = 0;
 
 /* A small hack to get the Python bindings to work */
 #if defined ALICE_PYTHON
 public:
 #endif
-  /*! \brief Returns logging data */
+  /*! \brief Returns logging data
+  
+    Logging data is returned in terms of a JSON object using the JSON API from
+    https://github.com/nlohmann/json.  This object can be nested, i.e., some
+    keys can map to other objects or arrays.
+
+    \verbatim embed:rst
+        .. code-block:: c++
+
+           nlohmann::json example_command::log() const
+           {
+             return nlohmann::json({
+               {"number", 42},
+               {"float", 9.81},
+               {"string", "alice"}
+             });
+           }
+    \endverbatim
+  */
   virtual nlohmann::json log() const { return nullptr; }
 
 public:

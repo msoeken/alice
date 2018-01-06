@@ -84,7 +84,7 @@ class upper_command : public command
 
   }
 
-  rules_t validity_rules() const
+  rules validity_rules() const
   {
     return {has_store_element<std::string>( env )};
   }

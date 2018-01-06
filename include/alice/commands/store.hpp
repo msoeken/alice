@@ -109,7 +109,7 @@ public:
   }
 
 protected:
-  rules_t validity_rules() const
+  rules validity_rules() const
   {
     return {
         {[this]() { return static_cast<unsigned>( is_set( "show" ) ) + static_cast<unsigned>( is_set( "clear" ) ) <= 1u; }, "only one operation can be specified"},

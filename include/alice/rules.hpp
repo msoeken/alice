@@ -40,14 +40,14 @@
 namespace alice
 {
 template<typename S>
-command::rule_t has_store_element( const environment::ptr& env )
+command::rule has_store_element( const environment::ptr& env )
 {
   auto constexpr name = store_info<S>::name;
   return { [&]() { return env->store<S>().current_index() >= 0; }, fmt::format( "no current {} available", name ) };
 }
 
 template<typename S>
-command::rule_t has_store_element_if_set( const command& cmd, const environment::ptr& env, const std::string& argname )
+command::rule has_store_element_if_set( const command& cmd, const environment::ptr& env, const std::string& argname )
 {
   auto constexpr name = store_info<S>::name;
   return { [&cmd, &env, name, argname]() { return !cmd.is_set( argname ) || env->store<S>().current_index() >= 0; }, fmt::format( "no current {} available", name ) };

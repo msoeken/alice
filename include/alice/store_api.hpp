@@ -281,4 +281,20 @@ DestStoreType convert( const SourceStoreType& element )
   (void)element;
   throw std::runtime_error( "[e] unimplemented function" );
 }
+
+template<typename StoreType>
+bool can_show( std::string& extension, command& cmd )
+{
+  (void)extension;
+  (void)cmd;
+  return false;
+}
+
+template<typename StoreType>
+void show( std::ostream& out, const StoreType& element, const command& cmd )
+{
+  (void)out;
+  (void)element;
+  (void)cmd;
+}
 }

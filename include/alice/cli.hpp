@@ -54,6 +54,7 @@
 #include "commands/quit.hpp"
 #include "commands/read_io.hpp"
 #include "commands/set.hpp"
+#include "commands/show.hpp"
 #include "commands/store.hpp"
 #include "commands/write_io.hpp"
 
@@ -100,6 +101,7 @@ public:
       insert_command( "current", std::make_shared<current_command<S...>>( env ) );
       insert_command( "print", std::make_shared<print_command<S...>>( env ) );
       insert_command( "ps", std::make_shared<ps_command<S...>>( env ) );
+      insert_command( "show", std::make_shared<show_command<S...>>( env ) );
       insert_command( "store", std::make_shared<store_command<S...>>( env ) );
     }
 

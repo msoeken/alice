@@ -37,3 +37,7 @@ check_cxx_compiler_flag("-Wno-unneeded-internal-declaration" HAS_NO_UNNEEDED_INT
 if (HAS_NO_UNNEEDED_INTERNAL_DECLARATION)
   target_compile_options(alice INTERFACE "-Wno-unneeded-internal-declaration")
 endif()
+check_cxx_compiler_flag("-Wno-deprecated-declarations" HAS_NO_DEPRECATED_DECLARATIONS)
+if (HAS_NO_DEPRECATED_DECLARATIONS)
+  target_compile_options(alice INTERFACE "-Wno-deprecated-declarations")
+endif()

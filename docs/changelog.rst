@@ -6,7 +6,7 @@ v0.1 (not yet released)
 
 * Initial release
 
-* General commands: ``alias``, ``convert``, ``current``, ``help``, ``print``, ``ps``, ``quit``, ``set``, ``store``
+* General commands: ``alias``, ``convert``, ``current``, ``help``, ``print``, ``ps``, ``quit``, ``set``, ``show``, ``store``
 
 * Shell application command line flags: ``--command``, ``--filename``, ``--echo``, ``--counter``, ``--interactive``, ``--log``
 

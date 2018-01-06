@@ -24,24 +24,26 @@ used to generate help strings in store-related commands.  Let's have a look what
     General commands:
      alias            convert          current          help
      print            ps               quit             select
-     store
+     show             store
 
 First, we see two categories of commands, the first one (`Generation commands`)
 listing the custom command ``hello``.  We'll get to that one in a bit.  There
 are also several other general commands compared to the previous tutorial.
 These are called store-related commands are as follows:
 
-+-------------+---------------------------------------------------+
-| ``convert`` | Converts a store element of one type into another |
-+-------------+---------------------------------------------------+
-| ``current`` | Changes the current store element                 |
-+-------------+---------------------------------------------------+
-| ``print``   | Prints the current store element                  |
-+-------------+---------------------------------------------------+
-| ``ps``      | Prints statistics about the current store element |
-+-------------+---------------------------------------------------+
-| ``store``   | Shows a summary of store elements                 |
-+-------------+---------------------------------------------------+
++-------------+------------------------------------------------------------------------+
+| ``convert`` | Converts a store element of one type into another                      |
++-------------+------------------------------------------------------------------------+
+| ``current`` | Changes the current store element                                      |
++-------------+------------------------------------------------------------------------+
+| ``print``   | Prints the current store element                                       |
++-------------+------------------------------------------------------------------------+
+| ``ps``      | Prints statistics about the current store element                      |
++-------------+------------------------------------------------------------------------+
+| ``show``    | Creates and shows a visual representation of the current store element |
++-------------+------------------------------------------------------------------------+
+| ``store``   | Shows a summary of store elements                                      |
++-------------+------------------------------------------------------------------------+
 
 In each command the type of store must be addressed by the flag name that was
 defined for the store in :c:macro:`ALICE_ADD_STORE`.  For example, ``print -s``

@@ -207,7 +207,7 @@ inline void print<type>( std::ostream& os, const type& element )
 */
 #define ALICE_READ_FILE(type, tag, filename, cmd) \
 template<> \
-inline bool can_read<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
+inline bool can_read<type, io_##tag##_tag_t>( command& ) { return true; } \
 template<> \
 inline type read<type, io_##tag##_tag_t>( const std::string& filename, const command& cmd )
 
@@ -226,7 +226,7 @@ inline type read<type, io_##tag##_tag_t>( const std::string& filename, const com
 */
 #define ALICE_WRITE_FILE(type, tag, element, filename, cmd) \
 template<> \
-inline bool can_write<type, io_##tag##_tag_t>( command& cmd ) { return true; } \
+inline bool can_write<type, io_##tag##_tag_t>( command& ) { return true; } \
 template<> \
 inline void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, const command& cmd )
 
@@ -307,7 +307,7 @@ _ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
   \param to Store type that should be converted to
   \return New store element
 */
-#define ALICE_CONVERT( from, element, to ) \
+#define ALICE_CONVERT(from, element, to) \
 template<> \
 inline bool can_convert<from, to>() \
 { \
@@ -315,6 +315,19 @@ inline bool can_convert<from, to>() \
 } \
 template<> \
 inline to convert<from, to>( const from& element )
+
+////////////////////////////////////////////////////////////////////////////////
+// show
+
+#define ALICE_SHOW(type, extension, os, element) \
+template<> \
+inline bool can_show<type>( std::string& ext, command& ) \
+{ \
+  ext = extension; \
+  return true; \
+} \
+template<> \
+inline void show<type>( std::ostream& os, const type& element, const command& )
 
 ////////////////////////////////////////////////////////////////////////////////
 // commands

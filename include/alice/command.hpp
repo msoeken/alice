@@ -441,21 +441,29 @@ public:
   */
   inline bool is_set( const std::string& name ) const
   {
-    if ( name.empty() )
+    try
     {
+      if ( name.empty() )
+      {
+        return false;
+      }
+      else if ( name.front() == '-' )
+      {
+        return opts.count( name );
+      }
+      else if ( name.size() == '1' )
+      {
+        return opts.count( "-" + name );
+      }
+      else
+      {
+        return opts.count( "--" + name );
+      }
+    }
+    catch ( const CLI::OptionNotFound& e )
+    {
+      (void)e;
       return false;
-    }
-    else if ( name.front() == '-' )
-    {
-      return opts.count( name );
-    }
-    else if ( name.size() == '1' )
-    {
-      return opts.count( "-" + name );
-    }
-    else
-    {
-      return opts.count( "--" + name );
     }
   }
 

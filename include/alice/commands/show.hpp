@@ -135,7 +135,11 @@ private:
 
 private:
   std::string filename;
+#ifdef __APPLE__
+  std::string program = "open {}";
+#else
   std::string program = "xdg-open {}";
+#endif
   std::unordered_map<std::string, std::string> extensions;
   unsigned option_count = 0u;
   std::string default_option;

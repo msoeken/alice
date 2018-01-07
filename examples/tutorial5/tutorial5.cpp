@@ -85,7 +85,7 @@ bool can_show<int>( std::string& extension, command& cmd )
 {
   extension = "ps";
 
-  cmd.add_option<unsigned>( "--fontsize", "font size" );
+  cmd.add_option<unsigned>( "--fontsize", "font size" )->group( "Numbers" );
 
   return true;
 }

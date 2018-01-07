@@ -20,6 +20,7 @@ Welcome to alice's documentation!
    tutorial2
    tutorial3
    tutorial4
+   tutorial5
 
 .. toctree::
    :maxdepth: 2

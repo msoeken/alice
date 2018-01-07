@@ -1,3 +1,5 @@
+.. _tutorial4:
+
 Tutorial 4: Two stores and conversion
 =====================================
 

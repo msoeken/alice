@@ -319,6 +319,16 @@ inline to convert<from, to>( const from& element )
 ////////////////////////////////////////////////////////////////////////////////
 // show
 
+/*! \brief Shows store element
+
+  This macro adds an implementation to show a store element using the command
+  ``show``.  It implements the store API functions ``can_show`` and ``show``.
+
+  \param type Store type
+  \param extension Default extension (for temporary filenames, without dot, e.g. ``"svg"``)
+  \param os Output stream
+  \param element Reference to the store element that should be shown
+*/
 #define ALICE_SHOW(type, extension, os, element) \
 template<> \
 inline bool can_show<type>( std::string& ext, command& ) \

@@ -80,6 +80,34 @@ ALICE_SHOW( std::string, "svg", os, element )
   os << fmt::format( svg, element );
 }
 
+template<>
+bool can_show<int>( std::string& extension, command& cmd )
+{
+  extension = "ps";
+
+  cmd.add_option<unsigned>( "--fontsize", "font size" );
+
+  return true;
+}
+
+template<>
+void show<int>( std::ostream& os, const int& element, const command& cmd )
+{
+  const auto ps = R"ps(
+%!PS
+/inch {{72 mul}} def
+
+/Times-Roman findfont {} scalefont setfont
+2.5 inch 5 inch moveto
+({}) show
+
+showpage
+  )ps";
+
+  const auto fontsize = cmd.option_value<unsigned>( "--fontsize", 30 );
+  os << fmt::format( ps, fontsize, element );
+}
+
 class number_command : public command
 {
 public:

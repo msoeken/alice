@@ -282,6 +282,20 @@ DestStoreType convert( const SourceStoreType& element )
   throw std::runtime_error( "[e] unimplemented function" );
 }
 
+/*! \brief Controls whether a store element can be visualized
+
+  If this function is overriden to be true, then also the function `show` mustbe
+  implement for the same store type.  The command `show` allows to visualize a
+  store element.  For this purpose a text file is written containing the visual
+  representation, e.g., in terms of DOT or SVG (but other formats are possible).
+
+  When implementing this function, it should return true and assign `extension`
+  a default file extension for the representation format, which will be used to
+  name temporary files.
+
+  \param extension Default extension, without the dot (e.g., `"svg"`)
+  \param cmd Mutable reference to command, e.g., to add custom options
+*/
 template<typename StoreType>
 bool can_show( std::string& extension, command& cmd )
 {
@@ -290,6 +304,16 @@ bool can_show( std::string& extension, command& cmd )
   return false;
 }
 
+/*! \brief Generates the file to visualize a store element
+
+  This function is function can be enabled by overriding the `can_show` function
+  to return true.  It takes as parameter an output stream `out` to a file that
+  is shown using a program by the `show` command.
+
+  \param out Output stream
+  \param element Store element to show
+  \param cmd Reference to command, e.g., to check whether custom options are set
+*/
 template<typename StoreType>
 void show( std::ostream& out, const StoreType& element, const command& cmd )
 {

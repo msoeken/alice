@@ -9,6 +9,7 @@ Macro API
    ALICE_DESCRIBE_STORE
    ALICE_PRINT_STORE
    ALICE_CONVERT
+   ALICE_SHOW
    ALICE_ADD_COMMAND
    ALICE_COMMAND
    ALICE_READ_FILE
@@ -26,6 +27,7 @@ Stores
 .. doxygendefine:: ALICE_DESCRIBE_STORE
 .. doxygendefine:: ALICE_PRINT_STORE
 .. doxygendefine:: ALICE_CONVERT
+.. doxygendefine:: ALICE_SHOW
 
 Commands
 --------

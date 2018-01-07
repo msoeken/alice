@@ -14,6 +14,8 @@ Store API
    write
    can_convert
    convert
+   can_show
+   show
 
 Declaring a new store type
 --------------------------
@@ -33,3 +35,5 @@ Customizing store functions
 .. doxygenfunction:: alice::write
 .. doxygenfunction:: alice::can_convert
 .. doxygenfunction:: alice::convert
+.. doxygenfunction:: alice::can_show
+.. doxygenfunction:: alice::show

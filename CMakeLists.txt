@@ -17,7 +17,7 @@ if (HAS_FCOLOR_DIAGNOSTICS)
   add_definitions(-fcolor-diagnostics)
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
 include(AliceTools)

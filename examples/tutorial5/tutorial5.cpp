@@ -71,11 +71,13 @@ ALICE_CONVERT( int, element, std::string )
 
 ALICE_SHOW( std::string, "svg", os, element )
 {
-  os << "<svg>" << std::endl
-     << "  <text x=\"0\" y=\"36\" font-size=\"36\" font-family=\"Verdana\">"
-     << element
-     << "</text>" << std::endl
-     << "</svg>" << std::endl;
+  const auto svg = R"svg(
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <text x="0" y="36" font-size="36" font-family="Verdana">{}</text>
+</svg>
+  )svg";
+
+  os << fmt::format( svg, element );
 }
 
 class number_command : public command

@@ -507,8 +507,6 @@ protected:
       return s;
     } );
 
-    for ( const auto& s : _args ) std::cout << s << std::endl;
-
     try
     {
       opts.parse( _args );

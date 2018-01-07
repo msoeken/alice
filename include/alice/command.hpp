@@ -493,7 +493,7 @@ protected:
     std::transform( args.rbegin(), args.rend() - 1, _args.begin(), []( const auto& s ) {
       if ( s.size() > 2 && s.front() == '"' && s.back() == '"' )
       {
-        return s.substr( 1, s.size() - 2 );
+        return detail::unescape_quotes( s.substr( 1, s.size() - 2 ) );
       }
 
       const auto c_eq = s.find( '=' );
@@ -501,11 +501,13 @@ protected:
 
       if ( c_eq != std::string::npos&& c_q != std::string::npos&& c_q == c_eq + 1 && s.back() == '"' )
       {
-        return s.substr( 0, c_eq + 1 ) + s.substr( c_q + 1, s.size() - c_q - 2 );
+        return detail::unescape_quotes( s.substr( 0, c_eq + 1 ) + s.substr( c_q + 1, s.size() - c_q - 2 ) );
       }
 
       return s;
     } );
+
+    for ( const auto& s : _args ) std::cout << s << std::endl;
 
     try
     {

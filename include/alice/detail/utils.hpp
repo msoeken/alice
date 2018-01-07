@@ -216,6 +216,26 @@ inline std::pair<int, std::string> execute_program( const std::string& cmd )
   }
   return {exit_status, result};
 }
+
+// based on https://stackoverflow.com/questions/5612182/convert-string-with-explicit-escape-sequence-into-relative-character
+inline std::string unescape_quotes( const std::string& s )
+{
+  std::string res;
+  std::string::const_iterator it = s.begin();
+
+  while ( it != s.end() )
+  {
+    char c = *it++;
+    if ( c == '\\' && it != s.end() && *it == '"' )
+    {
+      c = '"';
+      ++it;
+    }
+    res += c;
+  }
+
+  return res;
+}
 }
 }
 

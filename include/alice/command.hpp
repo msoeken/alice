@@ -395,7 +395,7 @@ public:
   {
     const auto index = options.size();
     options.push_back( T() );
-    auto opt = opts.add_option( name, options.back(), description );
+    auto opt = opts.add_option( name, linb::any_cast<T&>( options.back() ), description );
 
     for ( const auto& name : detail::split( opt->get_name(), "," ) )
     {

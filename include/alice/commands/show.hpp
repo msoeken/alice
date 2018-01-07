@@ -60,6 +60,7 @@ public:
     add_option( "--filename,filename", filename, "filename for visual representation (temporary file by default)" );
     add_option( "--program", program, "program to open file", true );
     add_flag( "--silent", "do not open file" );
+    add_flag( "--delete", "delete file after showing (program must run in foreground)" );
   }
 
 protected:
@@ -123,7 +124,7 @@ private:
           std::system( fmt::format( program, filename ).c_str() );
         }
 
-        if ( !is_set( "filename" ) )
+        if ( is_set( "delete" ) )
         {
           std::remove( filename.c_str() );
         }

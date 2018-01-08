@@ -274,6 +274,7 @@ struct io_##tag##_tag_t \
 { \
   io_##tag##_tag_t() \
   { \
+    if ( std::find( alice_globals::get().read_tags.begin(), alice_globals::get().read_tags.end(), #tag ) != alice_globals::get().read_tags.end() ) return; \
     alice_globals::get().read_tags.push_back(#tag); \
     alice_globals::get().read_names.push_back(name); \
     alice_globals::get().write_tags.push_back(#tag); \
@@ -296,6 +297,7 @@ struct io_##tag##_tag_t \
 { \
   io_##tag##_tag_t() \
   { \
+    if ( std::find( alice_globals::get().read_tags.begin(), alice_globals::get().read_tags.end(), #tag ) != alice_globals::get().read_tags.end() ) return; \
     alice_globals::get().read_tags.push_back(#tag); \
     alice_globals::get().read_names.push_back(name); \
   } \
@@ -315,6 +317,7 @@ struct io_##tag##_tag_t \
 { \
   io_##tag##_tag_t() \
   { \
+    if ( std::find( alice_globals::get().write_tags.begin(), alice_globals::get().write_tags.end(), #tag ) != alice_globals::get().write_tags.end() ) return; \
     alice_globals::get().write_tags.push_back(#tag); \
     alice_globals::get().write_names.push_back(name); \
   } \

@@ -111,7 +111,7 @@ showpage
 class number_command : public command
 {
 public:
-  number_command( const environment::ptr& env )
+  explicit number_command( const environment::ptr& env )
       : command( env, "reads a number" )
   {
     opts.add_option( "--load,load", number, "number to load to the store" )->required();

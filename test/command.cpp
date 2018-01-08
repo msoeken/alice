@@ -23,7 +23,7 @@ struct store_info<std::string>
 class test_command : public command
 {
 public:
-  test_command( const environment::ptr& env ) : command( env, "Simple test command" )
+  explicit test_command( const environment::ptr& env ) : command( env, "Simple test command" )
   {
   }
 

@@ -92,7 +92,7 @@ class upper_command : public command
   void execute()
   {
     auto& str = env->store<std::string>().current();
-  std::transform( str.begin(), str.end(), str.begin(), ::toupper );
+    std::transform( str.begin(), str.end(), str.begin(), ::toupper );
   }
 };
 

@@ -193,6 +193,35 @@ inline std::string to_string<type>( const type& element )
 template<> \
 inline void print<type>( std::ostream& os, const type& element )
 
+/*! \brief Prints statistics about a store element to the terminal
+
+  This macro is used to generate the output that is printed when calling ``ps``
+  for a store.
+
+  The macro must be followed by a code block.
+
+  \param type Store type
+  \param os Output stream (default is ``std::cout`` when in standalone mode)
+  \param element Reference to the store element
+*/
+#define ALICE_PRINT_STORE_STATISTICS(type, os, element) \
+template<> \
+inline void print_statistics<type>( std::ostream& out, const type& element )
+
+/*! \brief Prints statistics about a store element to the terminal
+
+  This macro is used to generate the JSON object that is logged when calling
+  `ps` for a store element.  The body must return an ``nlohmann::json`` object.
+
+  The macro must be followed by a code block.
+
+  \param type Store type
+  \param element Reference to the store element
+*/
+#define ALICE_LOG_STORE_STATISTICS(type, os) \
+template<> \
+inline nlohmann::json log_statistics<type>( const type& element )
+
 /*! \brief Read from a file into a store
 
   This macro adds an implementation for reading from a file into a store.
@@ -302,6 +331,8 @@ _ALICE_ADD_TO_LIST(alice_write_tags, io_##tag##_tag_t)
   ``from`` to a store element of type ``to``.  It causes a new option
   ``--<from>_to_<to>`` for the ``convert`` command.
 
+  The macro must be followed by a code block.
+
   \param from Store type that should be converted from
   \param element Reference to the store element that should be converted
   \param to Store type that should be converted to
@@ -323,6 +354,8 @@ inline to convert<from, to>( const from& element )
 
   This macro adds an implementation to show a store element using the command
   ``show``.  It implements the store API functions ``can_show`` and ``show``.
+
+  The macro must be followed by a code block.
 
   \param type Store type
   \param extension Default extension (for temporary filenames, without dot, e.g. ``"svg"``)

@@ -99,7 +99,7 @@ template<class... S>
 class convert_command : public command
 {
 public:
-  convert_command( const environment::ptr& env )
+  explicit convert_command( const environment::ptr& env )
       : command( env, "Convert store element into element of a different store" )
   {
     []( ... ) {}( add_combination_helper<S, S...>( opts )... );

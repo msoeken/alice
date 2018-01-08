@@ -40,7 +40,7 @@ namespace alice
 class set_command : public command
 {
 public:
-  set_command( const environment::ptr& env ) : command( env, "Sets environment variables" )
+  explicit set_command( const environment::ptr& env ) : command( env, "Sets environment variables" )
   {
     add_option( "--var,var", var, "variable name" )->required();
     add_option( "--value,value", value, "variable value" )->required();

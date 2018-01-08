@@ -41,53 +41,11 @@
 namespace alice
 {
 
-template<typename S>
-int ps_helper( const command& cmd, const environment::ptr& env )
-{
-  constexpr auto option = store_info<S>::option;
-  constexpr auto name   = store_info<S>::name;
-
-  if ( cmd.is_set( option ) )
-  {
-    if ( env->store<S>().current_index() == -1 )
-    {
-      std::cout << "[w] no " << name << " in store" << std::endl;
-    }
-    else
-    {
-      print_statistics<S>( std::cout, env->store<S>().current() );
-    }
-  }
-
-  return 0;
-}
-
-template<typename S>
-int ps_log_helper( const command& cmd, const environment::ptr& env, nlohmann::json& ret )
-{
-  if ( !ret.empty() )
-  {
-    return 0;
-  }
-
-  constexpr auto option = store_info<S>::option;
-
-  if ( cmd.is_set( option ) )
-  {
-    if ( env->store<S>().current_index() != -1 )
-    {
-      ret = log_statistics<S>( env->store<S>().current() );
-    }
-  }
-
-  return 0;
-}
-
 template<class... S>
 class ps_command : public command
 {
 public:
-  ps_command( const environment::ptr& env )
+  explicit ps_command( const environment::ptr& env )
     : command( env, "Print statistics" )
   {
     [](...){}( add_option_helper<S>( opts )... );
@@ -106,15 +64,58 @@ protected:
   {
     if ( !is_set( "silent" ) )
     {
-      [](...){}( ps_helper<S>( *this, env )... );
+      [](...){}( ps_store<S>()... );
     }
   }
 
   nlohmann::json log() const
   {
     nlohmann::json ret;
-    [](...){}( ps_log_helper<S>( *this, env, ret )... );
+    [](...){}( ps_log_store<S>( ret )... );
     return ret;
+  }
+
+private:
+  template<typename Store>
+  int ps_store() const
+  {
+    constexpr auto option = store_info<Store>::option;
+    constexpr auto name   = store_info<Store>::name;
+
+    if ( is_set( option ) )
+    {
+      if ( store<Store>().current_index() == -1 )
+      {
+        env->out() << "[w] no " << name << " in store" << std::endl;
+      }
+      else
+      {
+        print_statistics<Store>( env->out(), store<Store>().current() );
+      }
+    }
+
+    return 0;
+  }
+
+  template<typename Store>
+  int ps_log_store( nlohmann::json& ret ) const
+  {
+    if ( !ret.empty() )
+    {
+      return 0;
+    }
+
+    constexpr auto option = store_info<Store>::option;
+
+    if ( is_set( option ) )
+    {
+      if ( store<Store>().current_index() != -1 )
+      {
+        ret = log_statistics<Store>( store<Store>().current() );
+      }
+    }
+
+    return 0;
   }
 };
 

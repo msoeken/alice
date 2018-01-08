@@ -99,7 +99,7 @@ template<class... S>
 class store_command : public command
 {
 public:
-  store_command( const environment::ptr& env )
+  explicit store_command( const environment::ptr& env )
       : command( env, "Store management" )
   {
     add_flag( "--show", "show contents" );

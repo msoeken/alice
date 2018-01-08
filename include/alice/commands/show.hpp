@@ -48,10 +48,10 @@ template<class... S>
 class show_command : public command
 {
 public:
-  show_command( const environment::ptr& env )
+  explicit show_command( const environment::ptr& env )
     : command( env, "Show store entry" )
   {
-    []( ... ) {}( add_show_option_helper<S>()... );
+    []( ... ) {}( add_show_option<S>()... );
     if ( option_count != 1u )
     {
       default_option.clear();
@@ -75,12 +75,12 @@ protected:
 
   void execute()
   {
-    [](...){}( show_helper<S>()... );
+    [](...){}( show_store<S>()... );
   }
 
 private:
   template<typename Store>
-  int add_show_option_helper()
+  int add_show_option()
   {
     std::string extension;
     if ( can_show<Store>( extension, *this ) )
@@ -97,7 +97,7 @@ private:
   }
 
   template<typename Store>
-  int show_helper()
+  int show_store()
   {
     constexpr auto option = store_info<Store>::option;
     constexpr auto name = store_info<Store>::name;

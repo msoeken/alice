@@ -37,23 +37,11 @@
 namespace alice
 {
 
-template<typename S>
-int set_current_index_helper( const command& cmd, const environment::ptr& env, unsigned index )
-{
-  constexpr auto option = store_info<S>::option;
-
-  if ( cmd.is_set( option ) && index < env->store<S>().size() )
-  {
-    env->store<S>().set_current_index( index );
-  }
-  return 0;
-}
-
 template<class... S>
 class current_command : public command
 {
 public:
-  current_command( const environment::ptr& env )
+  explicit current_command( const environment::ptr& env )
       : command( env, "Switches current data structure" )
   {
     add_option( "index,--index", index, "new index" );
@@ -73,7 +61,20 @@ protected:
 
   void execute()
   {
-    []( ... ) {}( set_current_index_helper<S>( *this, env, index )... );
+    []( ... ) {}( set_current_index<S>()... );
+  }
+
+private:
+  template<typename Store>
+  int set_current_index()
+  {
+    constexpr auto option = store_info<Store>::option;
+
+    if ( is_set( option ) && index < store<Store>().size() )
+    {
+      store<Store>().set_current_index( index );
+    }
+    return 0;
   }
 
 private:

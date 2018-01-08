@@ -45,7 +45,7 @@ namespace alice
 class help_command : public command
 {
 public:
-  help_command( const environment::ptr& env ) : command( env, "Shows help" )
+  explicit help_command( const environment::ptr& env ) : command( env, "Shows help" )
   {
     add_flag( "-d,--detailed", "show command descriptions" );
     add_option( "-s,--search", search, "search for commands in help descriptions" );

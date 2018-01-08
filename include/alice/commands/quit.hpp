@@ -46,7 +46,7 @@ namespace alice
 class quit_command : public command
 {
 public:
-  quit_command( const environment::ptr& env )
+  explicit quit_command( const environment::ptr& env )
       : command( env, "Quits the program" ) {}
 
 protected:

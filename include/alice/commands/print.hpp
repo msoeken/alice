@@ -40,26 +40,6 @@ namespace alice
 {
 
 template<typename S>
-int print_helper( const command& cmd, const environment::ptr& env )
-{
-  constexpr auto option = store_info<S>::option;
-  constexpr auto name = store_info<S>::name;
-
-  if ( cmd.is_set( option ) )
-  {
-    if ( env->store<S>().current_index() == -1 )
-    {
-      env->out() << "[w] no " << name << " in store" << std::endl;
-    }
-    else
-    {
-      print<S>( env->out(), env->store<S>().current() );
-    }
-  }
-  return 0;
-}
-
-template<typename S>
 int print_log_helper( const command& cmd, const environment::ptr& env, nlohmann::json& map )
 {
   constexpr auto option = store_info<S>::option;
@@ -91,7 +71,7 @@ template<class... S>
 class print_command : public command
 {
 public:
-  print_command( const environment::ptr& env ) : command( env, "Prints current data structure" )
+  explicit print_command( const environment::ptr& env ) : command( env, "Prints current data structure" )
   {
     []( ... ) {}( add_option_helper<S>( opts )... );
   }
@@ -105,10 +85,30 @@ protected:
 
   void execute()
   {
-    //TODO
-    //#ifndef ALICE_PYTHON
-    []( ... ) {}( print_helper<S>( *this, env )... );
-    //#endif
+#if !defined ALICE_PYTHON
+    []( ... ) {}( print_store<S>()... );
+#endif
+  }
+
+private:
+  template<typename Store>
+  int print_store()
+  {
+    constexpr auto option = store_info<Store>::option;
+    constexpr auto name = store_info<Store>::name;
+
+    if ( is_set( option ) )
+    {
+      if ( store<Store>().current_index() == -1 )
+      {
+        env->out() << "[w] no " << name << " in store" << std::endl;
+      }
+      else
+      {
+        print<Store>( env->out(), store<Store>().current() );
+      }
+    }
+    return 0;
   }
 
   // TODO

@@ -40,7 +40,7 @@ namespace alice
 class alias_command : public command
 {
 public:
-  alias_command( const environment::ptr& env )
+  explicit alias_command( const environment::ptr& env )
       : command( env, "Create command aliases" )
   {
     add_option( "alias,--alias", alias, "regular expression for the alias" )->required();

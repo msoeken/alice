@@ -426,7 +426,7 @@ _ALICE_ADD_TO_LIST(alice_commands, name##_command) \
 class name##_command : public command \
 { \
 public: \
-  name##_command( const environment::ptr& env ) : command( env, description ) {} \
+  explicit name##_command( const environment::ptr& env ) : command( env, description ) {} \
 protected: \
   void execute(); \
 }; \

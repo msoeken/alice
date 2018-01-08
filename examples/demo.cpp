@@ -79,7 +79,7 @@ ALICE_COMMAND(hello, "Generation", "adds a welcome string to the store")
 class upper_command : public command
 {
   public:
-  upper_command( const environment::ptr& env ) : command( env, "changes string to upper case" )
+  explicit upper_command( const environment::ptr& env ) : command( env, "changes string to upper case" )
   {
 
   }

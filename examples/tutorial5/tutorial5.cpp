@@ -124,7 +124,7 @@ protected:
   }
 
 private:
-  int number;
+  int number{};
 };
 
 ALICE_ADD_COMMAND( number, "Generation" )

@@ -99,7 +99,7 @@ py::object json_to_python( const nlohmann::json& json )
 class return_value_dict
 {
 public:
-  return_value_dict( const nlohmann::json& map )
+  explicit return_value_dict( const nlohmann::json& map )
   {
     for ( auto it = map.begin(); it != map.end(); ++it )
     {

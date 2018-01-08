@@ -41,60 +41,6 @@
 namespace alice
 {
 
-template<typename S>
-int show_helper( const command& cmd, const environment::ptr& env )
-{
-  constexpr auto option = store_info<S>::option;
-  constexpr auto name_plural = store_info<S>::name_plural;
-
-  const auto& store = env->store<S>();
-
-  if ( cmd.is_set( option ) )
-  {
-    if ( store.empty() )
-    {
-      env->out() << fmt::format( "[i] no {} in store", name_plural ) << std::endl;
-    }
-    else
-    {
-      env->out() << fmt::format( "[i] {} in store:", name_plural ) << std::endl;
-      auto index = 0;
-      for ( const auto& element : store.data() )
-      {
-        env->out() << fmt::format( "  {} {:2}: ", ( store.current_index() == index ? '*' : ' ' ), index );
-        env->out() << to_string<S>( element ) << std::endl;
-        ++index;
-      }
-    }
-  }
-
-  return 0;
-}
-
-template<typename S>
-int clear_helper( const command& cmd, const environment::ptr& env )
-{
-  constexpr auto option = store_info<S>::option;
-
-  if ( cmd.is_set( option ) )
-  {
-    env->store<S>().clear();
-  }
-  return 0;
-}
-
-template<typename S>
-int log_helper( const command& cmd, const environment::ptr& env, nlohmann::json& map )
-{
-  constexpr auto option = store_info<S>::option;
-
-  if ( cmd.is_set( option ) )
-  {
-    map[option] = env->store<S>().current_index();
-  }
-  return 0;
-}
-
 template<class... S>
 class store_command : public command
 {
@@ -120,19 +66,74 @@ protected:
   {
     if ( is_set( "show" ) || !is_set( "clear" ) )
     {
-      []( ... ) {}( show_helper<S>( *this, env )... );
+      []( ... ) {}( show_store<S>()... );
     }
     else if ( is_set( "clear" ) )
     {
-      []( ... ) {}( clear_helper<S>( *this, env )... );
+      []( ... ) {}( clear_store<S>()... );
     }
   }
 
   nlohmann::json log() const
   {
     nlohmann::json map;
-    []( ... ) {}( log_helper<S>( *this, env, map )... );
+    []( ... ) {}( log_store<S>( map )... );
     return map;
+  }
+
+private:
+  template<typename Store>
+  int show_store()
+  {
+    constexpr auto option = store_info<Store>::option;
+    constexpr auto name_plural = store_info<Store>::name_plural;
+
+    const auto& _store = store<Store>();
+
+    if ( is_set( option ) )
+    {
+      if ( _store.empty() )
+      {
+        env->out() << fmt::format( "[i] no {} in store", name_plural ) << std::endl;
+      }
+      else
+      {
+        env->out() << fmt::format( "[i] {} in store:", name_plural ) << std::endl;
+        auto index = 0;
+        for ( const auto& element : _store.data() )
+        {
+          env->out() << fmt::format( "  {} {:2}: ", ( _store.current_index() == index ? '*' : ' ' ), index );
+          env->out() << to_string<Store>( element ) << std::endl;
+          ++index;
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  template<typename Store>
+  int clear_store()
+  {
+    constexpr auto option = store_info<Store>::option;
+
+    if ( is_set( option ) )
+    {
+      store<Store>().clear();
+    }
+    return 0;
+  }
+
+  template<typename Store>
+  int log_store( nlohmann::json& map ) const
+  {
+    constexpr auto option = store_info<Store>::option;
+
+    if ( is_set( option ) )
+    {
+      map[option] = store<Store>().current_index();
+    }
+    return 0;
   }
 };
 }

@@ -51,6 +51,12 @@ ALICE_PRINT_STORE( std::string, os, element )
   os << element << std::endl;
 }
 
+/* HTML representation in Python (e.g., in Jupyter notebooks) */
+ALICE_STORE_HTML( std::string, element )
+{
+  return fmt::format( "<b>{}</b>", element );
+}
+
 /* register a new file type to read from and write to */
 ALICE_ADD_FILE_TYPE( text, "Text" )
 

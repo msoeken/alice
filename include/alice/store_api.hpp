@@ -321,4 +321,35 @@ void show( std::ostream& out, const StoreType& element, const command& cmd )
   (void)element;
   (void)cmd;
 }
+
+/*! \brief Controls whether store element has specialized HTML output
+
+  This function can be used to customize the output of the `print` in Python
+  mode, when being used in Jupyter notebooks.  If this function returns true,
+  the output of `html_repr` is used to create HTML output for a store element.
+
+  Works only in Python mode.
+*/
+template<typename StoreType>
+bool has_html_repr()
+{
+  return false;
+}
+
+/*! \brief Returns an HTML representation for a store element in Python mode
+
+  This method enables to return a specialized HTML output for a store element
+  when calling `print` as a function in Python mode.  This output can be used in
+  environments such as Jupyter notebook.
+
+  Works only in Python mode.
+
+  \param element Store element
+*/
+template<typename StoreType>
+std::string html_repr( const StoreType& element )
+{
+  (void)element;
+  return "";
+}
 }

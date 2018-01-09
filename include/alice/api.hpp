@@ -376,6 +376,27 @@ template<> \
 inline void show<type>( std::ostream& os, const type& element, const command& )
 
 ////////////////////////////////////////////////////////////////////////////////
+// html_repr
+
+/*! \brief Generates HTML output for a store element
+
+  This macro is only needed when the shell is used as a Python module inside an
+  environment such as Jupyter notebooks.  Then a specialized output can be
+  configured for a store element when calling the `print` method on it.  It
+  implements the store API functions `has_html_repr` and `html_repr`.
+
+  The macro must be followed by a code block.
+
+  \param type Store type
+  \param element Reference to the current store element
+*/
+#define ALICE_STORE_HTML(type, element) \
+template<> \
+inline bool has_html_repr<type>() { return true; } \
+template<> \
+std::string html_repr<type>( const type& element )
+
+////////////////////////////////////////////////////////////////////////////////
 // commands
 
 template<typename CLI, typename Tuple, std::size_t Index>

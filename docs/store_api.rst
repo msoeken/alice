@@ -16,6 +16,8 @@ Store API
    convert
    can_show
    show
+   has_html_repr
+   html_repr
 
 Declaring a new store type
 --------------------------
@@ -37,3 +39,5 @@ Customizing store functions
 .. doxygenfunction:: alice::convert
 .. doxygenfunction:: alice::can_show
 .. doxygenfunction:: alice::show
+.. doxygenfunction:: alice::has_html_repr
+.. doxygenfunction:: alice::html_repr

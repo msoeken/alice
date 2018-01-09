@@ -14,6 +14,7 @@ Macro API
    ALICE_LOG_STORE_STATISTICS
    ALICE_CONVERT
    ALICE_SHOW
+   ALICE_STORE_HTML
    ALICE_ADD_COMMAND
    ALICE_COMMAND
    ALICE_READ_FILE
@@ -34,6 +35,7 @@ Stores
 .. doxygendefine:: ALICE_LOG_STORE_STATISTICS
 .. doxygendefine:: ALICE_CONVERT
 .. doxygendefine:: ALICE_SHOW
+.. doxygendefine:: ALICE_STORE_HTML
 
 Commands
 --------

@@ -110,11 +110,10 @@ private:
         print<Store>( strs, store<Store>().current() );
         map["__repr__"] = strs.str();
 
-        // TODO
-        // if ( store_has_repr_html<S>() )
-        // {
-        //   map["_repr_html_"] = store_repr_html<S>( env->store<S>().current() );
-        // }
+        if ( has_html_repr<Store>() )
+        {
+          map["_repr_html_"] = html_repr<Store>( store<Store>().current() );
+        }
       }
     }
     return 0;

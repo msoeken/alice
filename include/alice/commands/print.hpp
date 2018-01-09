@@ -39,34 +39,6 @@
 namespace alice
 {
 
-template<typename S>
-int print_log_helper( const command& cmd, const environment::ptr& env, nlohmann::json& map )
-{
-  constexpr auto option = store_info<S>::option;
-  constexpr auto name = store_info<S>::name;
-
-  if ( cmd.is_set( option ) )
-  {
-    if ( env->store<S>().current_index() == -1 )
-    {
-      map["__repr__"] = fmt::format( "[w] no {} in store", name );
-    }
-    else
-    {
-      std::stringstream strs;
-      print<S>( strs, env->store<S>().current() );
-      map["__repr__"] = strs.str();
-
-      // TODO
-      // if ( store_has_repr_html<S>() )
-      // {
-      //   map["_repr_html_"] = store_repr_html<S>( env->store<S>().current() );
-      // }
-    }
-  }
-  return 0;
-}
-
 template<class... S>
 class print_command : public command
 {
@@ -90,6 +62,15 @@ protected:
 #endif
   }
 
+#if defined ALICE_PYTHON
+  nlohmann::json log() const
+  {
+    nlohmann::json map;
+    []( ... ) {}( log_store<S>( map )... );
+    return map;
+  }
+#endif
+
 private:
   template<typename Store>
   int print_store()
@@ -111,16 +92,32 @@ private:
     return 0;
   }
 
-  // TODO
-  //   log_opt_t log() const
-  //   {
-  // #ifdef ALICE_PYTHON
-  //     log_map_t map;
-  //     []( ... ){}( print_log_helper<S>( *this, env, map )... );
-  //     return map;
-  // #else
-  //     return boost::none;
-  // #endif
-  //   }
+  template<typename Store>
+  int log_store( nlohmann::json& map ) const
+  {
+    constexpr auto option = store_info<Store>::option;
+    constexpr auto name = store_info<Store>::name;
+
+    if ( is_set( option ) )
+    {
+      if ( store<Store>().current_index() == -1 )
+      {
+        map["__repr__"] = fmt::format( "[w] no {} in store", name );
+      }
+      else
+      {
+        std::stringstream strs;
+        print<Store>( strs, store<Store>().current() );
+        map["__repr__"] = strs.str();
+
+        // TODO
+        // if ( store_has_repr_html<S>() )
+        // {
+        //   map["_repr_html_"] = store_repr_html<S>( env->store<S>().current() );
+        // }
+      }
+    }
+    return 0;
+  }
 };
 }

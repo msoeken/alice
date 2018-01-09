@@ -10,6 +10,7 @@ Welcome to alice's documentation!
    :maxdepth: 2
 
    installation
+   modes
    changelog
 
 .. toctree::

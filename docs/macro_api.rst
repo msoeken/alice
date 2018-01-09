@@ -1,3 +1,5 @@
+.. _macroapi:
+
 Macro API
 =========
 

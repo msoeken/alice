@@ -33,34 +33,15 @@
 #pragma once
 
 #include <string>
-#include <wordexp.h>
 
 #include <fmt/format.h>
 
 #include "../command.hpp"
+#include "../detail/utils.hpp"
+#include "../validators.hpp"
 
 namespace alice
 {
-inline std::string process_filename( const std::string& filename )
-{
-  std::string result;
-
-  wordexp_t p;
-  wordexp( filename.c_str(), &p, 0 );
-
-  for ( auto i = 0u; i < p.we_wordc; ++i )
-  {
-    if ( !result.empty() )
-    {
-      result += " ";
-    }
-    result += std::string( p.we_wordv[i] );
-  }
-
-  wordfree( &p );
-
-  return result;
-}
 
 template<typename Tag, typename S>
 int add_read_io_option_helper( command& cmd, unsigned& option_count, std::string& default_option )
@@ -107,7 +88,7 @@ public:
       default_option.clear();
     }
 
-    add_option( "filename,--filename", filename, "filename" )->check( CLI::ExistingFile );
+    add_option( "filename,--filename", filename, "filename" )->check( ExistingFileWordExp );
     add_flag( "-n,--new", "create new store entry" );
   }
 
@@ -123,7 +104,7 @@ protected:
 
   void execute()
   {
-    []( ... ) {}( read_io_helper<Tag, S>( *this, default_option, env, process_filename( filename ) )... );
+    []( ... ) {}( read_io_helper<Tag, S>( *this, default_option, env, detail::word_exp_filename( filename ) )... );
   }
 
 private:

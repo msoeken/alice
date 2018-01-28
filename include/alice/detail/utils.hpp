@@ -29,6 +29,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <wordexp.h>
 
 #include <algorithm>
 #include <cctype>
@@ -235,6 +236,27 @@ inline std::string unescape_quotes( const std::string& s )
   }
 
   return res;
+}
+
+inline std::string word_exp_filename( const std::string& filename )
+{
+  std::string result;
+
+  wordexp_t p;
+  wordexp( filename.c_str(), &p, 0 );
+
+  for ( auto i = 0u; i < p.we_wordc; ++i )
+  {
+    if ( !result.empty() )
+    {
+      result += " ";
+    }
+    result += std::string( p.we_wordv[i] );
+  }
+
+  wordfree( &p );
+
+  return result;
 }
 }
 }

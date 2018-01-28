@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+v0.2 (not yet released)
+-----------------------
+
+* Validators: ``ExistingFileWordExp``
+
 v0.1 (January 11, 2018)
 -----------------------
 

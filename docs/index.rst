@@ -33,6 +33,7 @@ Welcome to alice's documentation!
    command
    environment
    store
+   validators
 
 Indices and tables
 ==================

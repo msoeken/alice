@@ -24,21 +24,34 @@
  */
 
 /*
-  \file alice.hpp
-  \brief Main header for alice
+  \file validators.hpp
+  \brief Some validators which do not exist in CLI11
 
   \author Mathias Soeken
 */
 
 #pragma once
 
-#if !defined(ALICE_NOAPI)
-#include "api.hpp"
-#endif
-#include "cli.hpp"
-#include "command.hpp"
-#include "readline.hpp"
-#include "rules.hpp"
-#include "store.hpp"
-#include "store_api.hpp"
-#include "validators.hpp"
+#include <string>
+
+#include <CLI11.hpp>
+
+#include "detail/utils.hpp"
+
+namespace alice
+{
+/*! \brief Checks whether file exists (after expansion)
+
+  Before checking whether the file exists, tilde characters for home directories
+  and environment variables are expanded (using `wordexp`).
+
+  Camel case convention for this function is intentional to match the convention
+  of CLI11, since this function is used when declaring CLI options.
+
+  \param filename Filename
+*/
+inline std::string ExistingFileWordExp( const std::string& filename )
+{
+  return CLI::ExistingFile( detail::word_exp_filename( filename ) );
+}
+}

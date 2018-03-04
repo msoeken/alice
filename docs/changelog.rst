@@ -6,6 +6,10 @@ v0.2 (not yet released)
 
 * Validators: ``ExistingFileWordExp``
 
+* C library interface
+  `#1 <https://github.com/msoeken/kitty/pull/1>`_
+
+
 v0.1 (January 11, 2018)
 -----------------------
 

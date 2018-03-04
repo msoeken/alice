@@ -5,6 +5,7 @@ add_executable(demo demo.cpp)
 target_link_libraries(demo alice)
 target_compile_definitions(demo PUBLIC ALICE_ENV_HOME=ALICE_HOME)
 add_alice_python_module(demo demo.cpp)
+add_alice_c_library(demo demo.cpp)
 
 # tutorial 1
 add_executable(tutorial1 tutorial1/tutorial1.cpp)

@@ -107,7 +107,7 @@ struct store_info
   \pram element Store element
 */
 template<typename StoreType>
-std::string to_string( const StoreType& element )
+std::string to_string( StoreType const& element )
 {
   (void)element;
   return "";
@@ -123,7 +123,7 @@ std::string to_string( const StoreType& element )
   \param out Output stream \param element Store element
  */
 template<typename StoreType>
-void print( std::ostream& out, const StoreType& element )
+void print( std::ostream& out, StoreType const& element )
 {
   (void)element;
   out << std::endl;
@@ -137,7 +137,7 @@ void print( std::ostream& out, const StoreType& element )
   \param element Store element
 */
 template<typename StoreType>
-void print_statistics( std::ostream& out, const StoreType& element )
+void print_statistics( std::ostream& out, StoreType const& element )
 {
   (void)element;
   out << std::endl;
@@ -152,7 +152,7 @@ void print_statistics( std::ostream& out, const StoreType& element )
   \param element Store element
 */
 template<typename StoreType>
-nlohmann::json log_statistics( const StoreType& element )
+nlohmann::json log_statistics( StoreType const& element )
 {
   (void)element;
   return nlohmann::json({});
@@ -240,7 +240,7 @@ bool can_write( command& cmd )
   \param cmd Reference to command, e.g., to check whether custom options are set
 */
 template<typename StoreType, typename Tag>
-void write( const StoreType& element, const std::string& filename, const command& cmd )
+void write( StoreType const& element, const std::string& filename, const command& cmd )
 {
   (void)element;
   (void)filename;
@@ -276,7 +276,7 @@ bool can_convert()
   \return Converted store element
 */
 template<typename SourceStoreType, typename DestStoreType>
-DestStoreType convert( const SourceStoreType& element )
+DestStoreType convert( SourceStoreType const& element )
 {
   (void)element;
   throw std::runtime_error( "[e] unimplemented function" );
@@ -315,7 +315,7 @@ bool can_show( std::string& extension, command& cmd )
   \param cmd Reference to command, e.g., to check whether custom options are set
 */
 template<typename StoreType>
-void show( std::ostream& out, const StoreType& element, const command& cmd )
+void show( std::ostream& out, StoreType const& element, const command& cmd )
 {
   (void)out;
   (void)element;
@@ -347,7 +347,7 @@ bool has_html_repr()
   \param element Store element
 */
 template<typename StoreType>
-std::string html_repr( const StoreType& element )
+std::string html_repr( StoreType const& element )
 {
   (void)element;
   return "";

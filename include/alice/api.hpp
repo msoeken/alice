@@ -177,7 +177,7 @@ struct insert_write_commands<CLI, Tuple, 0>
 */
 #define ALICE_DESCRIBE_STORE(type, element) \
 template<> \
-inline std::string to_string<type>( const type& element )
+inline std::string to_string<type>( type const& element )
 
 /*! \brief Prints a store element to the terminal
 
@@ -192,7 +192,7 @@ inline std::string to_string<type>( const type& element )
 */
 #define ALICE_PRINT_STORE(type, os, element) \
 template<> \
-inline void print<type>( std::ostream& os, const type& element )
+inline void print<type>( std::ostream& os, type const& element )
 
 /*! \brief Prints statistics about a store element to the terminal
 
@@ -207,7 +207,7 @@ inline void print<type>( std::ostream& os, const type& element )
 */
 #define ALICE_PRINT_STORE_STATISTICS(type, os, element) \
 template<> \
-inline void print_statistics<type>( std::ostream& out, const type& element )
+inline void print_statistics<type>( std::ostream& out, type const& element )
 
 /*! \brief Prints statistics about a store element to the terminal
 
@@ -219,9 +219,9 @@ inline void print_statistics<type>( std::ostream& out, const type& element )
   \param type Store type
   \param element Reference to the store element
 */
-#define ALICE_LOG_STORE_STATISTICS(type, os) \
+#define ALICE_LOG_STORE_STATISTICS(type, element) \
 template<> \
-inline nlohmann::json log_statistics<type>( const type& element )
+inline nlohmann::json log_statistics<type>( type const& element )
 
 /*! \brief Read from a file into a store
 
@@ -258,7 +258,7 @@ inline type read<type, io_##tag##_tag_t>( const std::string& filename, const com
 template<> \
 inline bool can_write<type, io_##tag##_tag_t>( command& ) { return true; } \
 template<> \
-inline void write<type, io_##tag##_tag_t>( const type& element, const std::string& filename, const command& cmd )
+inline void write<type, io_##tag##_tag_t>( type const& element, const std::string& filename, const command& cmd )
 
 /*! \brief Registers a file type to alice
 
@@ -349,7 +349,7 @@ inline bool can_convert<from, to>() \
   return true; \
 } \
 template<> \
-inline to convert<from, to>( const from& element )
+inline to convert<from, to>( from const& element )
 
 ////////////////////////////////////////////////////////////////////////////////
 // show
@@ -374,7 +374,7 @@ inline bool can_show<type>( std::string& ext, command& ) \
   return true; \
 } \
 template<> \
-inline void show<type>( std::ostream& os, const type& element, const command& )
+inline void show<type>( std::ostream& os, type const& element, const command& )
 
 ////////////////////////////////////////////////////////////////////////////////
 // html_repr
@@ -395,7 +395,7 @@ inline void show<type>( std::ostream& os, const type& element, const command& )
 template<> \
 inline bool has_html_repr<type>() { return true; } \
 template<> \
-std::string html_repr<type>( const type& element )
+std::string html_repr<type>( type const& element )
 
 ////////////////////////////////////////////////////////////////////////////////
 // commands

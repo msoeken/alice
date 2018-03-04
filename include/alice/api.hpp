@@ -38,6 +38,7 @@
 #include <fmt/format.h>
 
 #include "detail/python.hpp"
+#include "detail/utils.hpp"
 #include "cli.hpp"
 
 namespace alice
@@ -500,6 +501,51 @@ PYBIND11_MODULE(prefix, m) \
 { \
   _ALICE_MAIN_BODY(prefix) \
   alice::detail::create_python_module( cli, m ); \
+}
+#elif defined ALICE_CINTERFACE
+#define ALICE_MAIN(prefix) \
+using namespace alice; \
+_ALICE_END_LIST( alice_stores ) \
+_ALICE_END_LIST( alice_commands ) \
+_ALICE_END_LIST( alice_read_tags ) \
+_ALICE_END_LIST( alice_write_tags ) \
+\
+using cli_t = tuple_to_cli<alice_stores>::type; \
+\
+extern "C" { \
+  void* prefix##_create() { \
+    auto cli = new cli_t( #prefix ); \
+    insert_read_commands<cli_t, alice_read_tags, std::tuple_size<alice_read_tags>::value> irc( *cli ); \
+    insert_write_commands<cli_t, alice_write_tags, std::tuple_size<alice_write_tags>::value> iwc( *cli ); \
+    insert_commands<cli_t, alice_commands, std::tuple_size<alice_commands>::value> ic( *cli ); \
+    return reinterpret_cast<void*>( cli ); \
+  } \
+  \
+  void prefix##_delete( void* p ) { \
+    auto cli = reinterpret_cast<cli_t*>( p ); \
+    delete cli; \
+  } \
+  \
+  int prefix##_command( void* p, const char *cmd, char* log, size_t size ) { \
+    auto cli = reinterpret_cast<cli_t*>( p ); \
+    auto vline = detail::split_with_quotes<' '>( cmd ); \
+    const auto it = cli->env->commands().find( vline.front() ); \
+    if ( it != cli->env->commands().end() ) \
+    { \
+      const auto result = it->second->run( vline ); \
+      if ( result ) \
+      { \
+        const auto json = it->second->log(); \
+        if ( log && !json.is_null() ) { \
+          const auto dump = json.dump(); \
+          strncpy( log, dump.c_str(), size ); \
+          return dump.size() + 1; \
+        } \
+        return 0; \
+      } \
+    } \
+    return -1; \
+  } \
 }
 #else
 /*! \brief Alice main routine

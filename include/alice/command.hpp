@@ -284,7 +284,7 @@ protected:
   virtual void execute() = 0;
 
 /* A small hack to get the Python bindings to work */
-#if defined ALICE_PYTHON
+#if defined ALICE_PYTHON || defined ALICE_CINTERFACE
 public:
 #endif
   /*! \brief Returns logging data
@@ -478,7 +478,7 @@ public:
   }
 
 /* A small hack to get the Python bindings to work */
-#if defined ALICE_PYTHON
+#if defined ALICE_PYTHON || defined ALICE_CINTERFACE
 public:
 #else
 protected:

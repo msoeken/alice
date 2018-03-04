@@ -12,6 +12,11 @@ target_link_libraries(alice_python INTERFACE alice)
 target_compile_definitions(alice_python INTERFACE ALICE_PYTHON)
 target_link_libraries(alice_python INTERFACE pybind11::module)
 
+# library for C interface
+add_library(alice_cinterface INTERFACE)
+target_link_libraries(alice_cinterface INTERFACE alice)
+target_compile_definitions(alice_cinterface INTERFACE ALICE_CINTERFACE)
+
 if(ALICE_READLINE_LIBRARY STREQUAL "READLINE")
   include(CheckCXXSourceRuns)
   set(CMAKE_REQUIRED_LIBRARIES readline)

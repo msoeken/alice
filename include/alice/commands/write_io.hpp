@@ -57,7 +57,7 @@ int add_write_io_option_helper( command& cmd, unsigned& option_count, std::strin
 }
 
 template<typename Tag, typename S>
-int write_io_helper( const command& cmd, const std::string& default_option, const environment::ptr& env, const std::string& filename )
+int write_io_helper( const command& cmd, const std::string& default_option, const environment::ptr& env, const std::string& filename, std::string& contents )
 {
   constexpr auto option = store_info<S>::option;
   constexpr auto name = store_info<S>::name;
@@ -67,6 +67,19 @@ int write_io_helper( const command& cmd, const std::string& default_option, cons
     if ( env->store<S>().current_index() == -1 )
     {
       env->out() << "[w] no " << name << " selected in store" << std::endl;
+    }
+    else if ( cmd.is_set( "--log" ) )
+    {
+      try
+      {
+        std::ostringstream os;
+        write<S, Tag>( env->store<S>().current(), os, cmd );
+        contents = os.str();
+      }
+      catch (...)
+      {
+        env->out() << "[w] writing to log is not supported for this command" << std::endl;
+      }
     }
     else
     {
@@ -90,6 +103,7 @@ public:
     }
 
     add_option( "filename,--filename", filename, "filename" );
+    add_flag( "--log", "write file contents to log instead of filename" );
   }
 
 protected:
@@ -104,11 +118,24 @@ protected:
 
   void execute()
   {
-    []( ... ) {}( write_io_helper<Tag, S>( *this, default_option, env, filename )... );
+    []( ... ) {}( write_io_helper<Tag, S>( *this, default_option, env, filename, contents )... );
+  }
+
+  nlohmann::json log() const
+  {
+    if ( is_set( "--log" ) )
+    {
+      return {{"contents", contents}};
+    }
+    else
+    {
+      return nullptr;
+    }
   }
 
 private:
   std::string filename;
+  std::string contents;
   unsigned option_count = 0u;
   std::string default_option;
 };

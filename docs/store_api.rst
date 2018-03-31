@@ -34,7 +34,8 @@ Customizing store functions
 .. doxygenfunction:: alice::can_read
 .. doxygenfunction:: alice::read
 .. doxygenfunction:: alice::can_write
-.. doxygenfunction:: alice::write
+.. doxygenfunction:: alice::write(StoreType const&, const std::string&, const command&)
+.. doxygenfunction:: alice::write(StoreType const&, std::ostream&, const command&)
 .. doxygenfunction:: alice::can_convert
 .. doxygenfunction:: alice::convert
 .. doxygenfunction:: alice::can_show

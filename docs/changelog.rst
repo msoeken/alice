@@ -7,8 +7,10 @@ v0.2 (not yet released)
 * Validators: ``ExistingFileWordExp``
 
 * C library interface
-  `#1 <https://github.com/msoeken/kitty/pull/1>`_
+  `#1 <https://github.com/msoeken/alice/pull/1>`_
 
+* General commands: ``write_<format> --log`` to write file contents to log
+  `#2 <https://github.com/msoeken/alice/pull/2>`_
 
 v0.1 (January 11, 2018)
 -----------------------

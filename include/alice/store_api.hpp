@@ -230,7 +230,7 @@ bool can_write( command& cmd )
   return false;
 }
 
-/*! \brief Writes to a format and returns store element
+/*! \brief Writes store element to a file format
 
   This function must be enabled by overriding the `can_write` function
   for the same store element type and format tag.
@@ -244,6 +244,24 @@ void write( StoreType const& element, const std::string& filename, const command
 {
   (void)element;
   (void)filename;
+  (void)cmd;
+  throw std::runtime_error( "[e] unimplemented function" );
+}
+
+/*! \brief Writes store element to log file
+
+  This function should be enabled by overriding the `can_write` function for the
+  same store element type and format tag.
+
+  \param element Store element to write
+  \param os Output stream to write to
+  \param cmd Reference to command, e.g., to check whether custom options are set
+*/
+template<typename StoreType, typename Tag>
+void write( StoreType const& element, std::ostream& os, const command& cmd )
+{
+  (void)element;
+  (void)os;
   (void)cmd;
   throw std::runtime_error( "[e] unimplemented function" );
 }

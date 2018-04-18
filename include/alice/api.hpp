@@ -207,7 +207,7 @@ inline void print<type>( std::ostream& os, type const& element )
 */
 #define ALICE_PRINT_STORE_STATISTICS(type, os, element) \
 template<> \
-inline void print_statistics<type>( std::ostream& out, type const& element )
+inline void print_statistics<type>( std::ostream& os, type const& element )
 
 /*! \brief Prints statistics about a store element to the terminal
 

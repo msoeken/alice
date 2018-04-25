@@ -258,7 +258,7 @@ inline std::string word_exp_filename( const std::string& filename )
 
   return result;
 }
-}
-}
+} /* namespace detail */
+} /* namespace alice */
 
 /*! \endcond */

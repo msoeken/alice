@@ -116,7 +116,7 @@ private:
       const auto& name = *it++;
       if ( name.find( text ) != std::string::npos )
       {
-        char* completion = new char[name.size()];
+        char* completion = (char*)malloc( sizeof( char ) * ( name.size() + 1 ) );
         strcpy( completion, name.c_str() );
         return completion;
       }

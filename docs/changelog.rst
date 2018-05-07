@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-v0.2 (not yet released)
------------------------
+v0.2 (May 7, 2018)
+------------------
 
 * Validators: ``ExistingFileWordExp``
 

@@ -65,12 +65,25 @@ int read_io_helper( const command& cmd, const std::string& default_option, const
 
   if ( cmd.is_set( option ) || option == default_option )
   {
-    if ( cmd.is_set( "new" ) || env->store<S>().empty() )
+    try
     {
-      env->store<S>().extend();
-    }
+      const auto element = read<S, Tag>( filename, cmd );
 
-    env->store<S>().current() = read<S, Tag>( filename, cmd );
+      if ( cmd.is_set( "new" ) || env->store<S>().empty() )
+      {
+        env->store<S>().extend();
+      }
+
+      env->store<S>().current() = element;
+    }
+    catch ( const std::string& error )
+    {
+      env->err() << "[e] " << error << "\n";
+    }
+    catch ( ... )
+    {
+      /* do nothing, user should display error or warning in `read` function */
+    }
   }
   return 0;
 }

@@ -203,6 +203,10 @@ bool can_read( command& cmd )
   same store element type and format tag.  See `can_read` for more details and
   an example.
 
+  The `read` function may throw an exception.  In this case, no new element
+  is added to the store.  Anything can be thrown, but if a `std::string` is
+  thrown, this string is used to output an error message to the error stream.
+
   \param filename Filename to read from
   \param cmd Reference to command, e.g., to check whether custom options are set
 */

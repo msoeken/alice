@@ -9,6 +9,14 @@ your source files using
 
    #include <alice/alice.hpp>
 
+Compile with readline
+---------------------
+
+Alice can use the *readline* library to enable command completition and history.
+If one integrates alice through *CMake*, then *readline* is enabled by default.
+Otherwise, make sure to define ``READLINE_USE_READLINE`` and link against
+*readline*.
+
 Building examples
 -----------------
 

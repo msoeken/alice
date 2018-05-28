@@ -17,6 +17,9 @@ v0.2 (May 7, 2018)
 * General commands: ``write_<format> --log`` to write file contents to log
   `#2 <https://github.com/msoeken/alice/pull/2>`_
 
+* General commands: ``ps --all`` to show statistics of all store entries
+  `#5 <https://github.com/msoeken/alice/pull/5>`_
+
 v0.1 (January 11, 2018)
 -----------------------
 

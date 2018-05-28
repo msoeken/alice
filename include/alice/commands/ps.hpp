@@ -49,6 +49,7 @@ public:
     : command( env, "Print statistics" )
   {
     [](...){}( add_option_helper<S>( opts )... );
+    add_flag( "--all", "show statistics about all store entries" );
     add_flag( "--silent", "produce no output" );
   }
 
@@ -84,13 +85,25 @@ private:
 
     if ( is_set( option ) )
     {
-      if ( store<Store>().current_index() == -1 )
+      if ( is_set( "all" ) )
       {
-        env->out() << "[w] no " << name << " in store" << std::endl;
+        auto ctr{0u};
+        for ( const auto& elem : store<Store>().data() )
+        {
+          env->out() << "[i] \033[1;34m" << name << "\033[0m \033[1;33m" << ctr++ << "\033[0m\n";
+          print_statistics<Store>( env->out(), elem );
+        }
       }
       else
       {
-        print_statistics<Store>( env->out(), store<Store>().current() );
+        if ( store<Store>().current_index() == -1 )
+        {
+          env->out() << "[w] no " << name << " in store" << std::endl;
+        }
+        else
+        {
+          print_statistics<Store>( env->out(), store<Store>().current() );
+        }
       }
     }
 
@@ -109,9 +122,21 @@ private:
 
     if ( is_set( option ) )
     {
-      if ( store<Store>().current_index() != -1 )
+      if ( is_set( "all" ) )
       {
-        ret = log_statistics<Store>( store<Store>().current() );
+        auto arr = nlohmann::json::array();
+        for ( const auto& elem : store<Store>().data() )
+        {
+          arr.push_back( log_statistics<Store>( elem ) );
+        }
+        ret["all"] = arr;
+      }
+      else
+      {
+        if ( store<Store>().current_index() != -1 )
+        {
+          ret = log_statistics<Store>( store<Store>().current() );
+        }
       }
     }
 

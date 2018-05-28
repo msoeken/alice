@@ -12,6 +12,8 @@ v0.2 (May 7, 2018)
 * General commands: ``write_<format> --log`` to write file contents to log
   `#2 <https://github.com/msoeken/alice/pull/2>`_
 
+* Throw and catch errors in `read`.
+
 v0.1 (January 11, 2018)
 -----------------------
 

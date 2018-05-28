@@ -56,7 +56,7 @@ protected:
   rules validity_rules() const
   {
     return {
-      {[this]() { return any_true_helper<bool>( { is_set( store_info<S>::option )... } ); }, "no store has been specified" }
+      {[this]() { (void)this; return any_true_helper<bool>( { is_set( store_info<S>::option )... } ); }, "no store has been specified" }
     };
   }
 

@@ -59,7 +59,7 @@ protected:
   {
     return {
         {[this]() { return static_cast<unsigned>( is_set( "show" ) ) + static_cast<unsigned>( is_set( "clear" ) ) <= 1u; }, "only one operation can be specified"},
-        {[this]() { return any_true_helper<bool>( {is_set( store_info<S>::option )...} ); }, "no store has been specified"}};
+        {[this]() { (void)this; return any_true_helper<bool>( {is_set( store_info<S>::option )...} ); }, "no store has been specified"}};
   }
 
   void execute()

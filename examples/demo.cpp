@@ -51,6 +51,20 @@ ALICE_PRINT_STORE( std::string, os, element )
   os << element << std::endl;
 }
 
+/* text printed when calling `ps -s` */
+ALICE_PRINT_STORE_STATISTICS( std::string, os, element )
+{
+  os << fmt::format( "{} characters, {} lines\n", element.size(), std::count( element.begin(), element.end(), '\n' ) );
+}
+
+ALICE_LOG_STORE_STATISTICS( std::string, element )
+{
+  return nlohmann::json{
+    {"characters", element.size()},
+    {"lines", std::count( element.begin(), element.end(), '\n' )}
+  };
+}
+
 /* HTML representation in Python (e.g., in Jupyter notebooks) */
 ALICE_STORE_HTML( std::string, element )
 {

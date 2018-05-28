@@ -6,6 +6,9 @@ v0.3 (not yet released)
 
 * Throw and catch errors in `read`.
 
+* General commands: ``ps --all`` to show statistics of all store entries
+  `#5 <https://github.com/msoeken/alice/pull/5>`_
+
 v0.2 (May 7, 2018)
 ------------------
 

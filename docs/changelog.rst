@@ -6,6 +6,9 @@ v0.3 (not yet released)
 
 * Throw and catch errors in `read`.
 
+* General commands: Read multiple files in ``read``
+  `#6 <https://github.com/msoeken/alice/pull/6>`_
+
 v0.2 (May 7, 2018)
 ------------------
 

@@ -33,6 +33,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <fmt/format.h>
 
@@ -59,30 +60,35 @@ int add_read_io_option_helper( command& cmd, unsigned& option_count, std::string
 }
 
 template<typename Tag, typename S>
-int read_io_helper( const command& cmd, const std::string& default_option, const environment::ptr& env, const std::string& filename )
+int read_io_helper( const command& cmd, const std::string& default_option, bool multiple, const environment::ptr& env, const std::string& filename )
 {
   constexpr auto option = store_info<S>::option;
 
   if ( cmd.is_set( option ) || option == default_option )
   {
-    try
-    {
-      const auto element = read<S, Tag>( filename, cmd );
+    const auto names = detail::split( filename, " " );
 
-      if ( cmd.is_set( "new" ) || env->store<S>().empty() )
+    for ( const auto& name : names )
+    {
+      try
       {
-        env->store<S>().extend();
-      }
+        const auto element = read<S, Tag>( name, cmd );
 
-      env->store<S>().current() = element;
-    }
-    catch ( const std::string& error )
-    {
-      env->err() << "[e] " << error << "\n";
-    }
-    catch ( ... )
-    {
-      /* do nothing, user should display error or warning in `read` function */
+        if ( multiple || names.size() > 1 || cmd.is_set( "new" ) || env->store<S>().empty() )
+        {
+          env->store<S>().extend();
+        }
+
+        env->store<S>().current() = element;
+      }
+      catch ( const std::string& error )
+      {
+        env->err() << "[e] " << error << "\n";
+      }
+      catch ( ... )
+      {
+        /* do nothing, user should display error or warning in `read` function */
+      }
     }
   }
   return 0;
@@ -101,7 +107,7 @@ public:
       default_option.clear();
     }
 
-    add_option( "filename,--filename", filename, "filename" )->check( ExistingFileWordExp )->required();
+    add_option( "filename,--filename", filenames, "one or multiple filenames" )->check( ExistingFileWordExp )->required();
     add_flag( "-n,--new", "create new store entry" );
   }
 
@@ -117,11 +123,15 @@ protected:
 
   void execute()
   {
-    []( ... ) {}( read_io_helper<Tag, S>( *this, default_option, env, detail::word_exp_filename( filename ) )... );
+    bool multiple{filenames.size() > 1};
+    for ( const auto& filename : filenames )
+    {
+      []( ... ) {}( read_io_helper<Tag, S>( *this, default_option, multiple, env, detail::word_exp_filename( filename ) )... );
+    }
   }
 
 private:
-  std::string filename;
+  std::vector<std::string> filenames;
   unsigned option_count = 0u;
   std::string default_option;
 };

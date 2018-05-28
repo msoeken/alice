@@ -88,7 +88,7 @@ public:
       default_option.clear();
     }
 
-    add_option( "filename,--filename", filename, "filename" )->check( ExistingFileWordExp );
+    add_option( "filename,--filename", filename, "filename" )->check( ExistingFileWordExp )->required();
     add_flag( "-n,--new", "create new store entry" );
   }
 

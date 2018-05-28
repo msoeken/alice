@@ -7,6 +7,8 @@
 <img src="https://cdn.rawgit.com/msoeken/alice/master/alice.svg" width="64" height="64" align="left" style="margin-right: 12pt" />
 alice is a C++-14 command shell library that supports automatic Python bindings.  It offers a simple yet feature-rich embedded DSL to create shell interfaces with user-defined commands that access and manipulate arbitrary user-defined data types.  Here is a small example for a shell to manipulate `string` objects.
 
+[Read the full documentation.](http://libalice.readthedocs.io/en/latest/?badge=latest)
+
 ```c++
 #include <alice/alice.hpp>
 

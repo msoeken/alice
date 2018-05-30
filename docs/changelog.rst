@@ -9,6 +9,9 @@ v0.3 (not yet released)
 * General commands: ``ps --all`` to show statistics of all store entries
   `#5 <https://github.com/msoeken/alice/pull/5>`_
 
+* General commands: Read multiple files in ``read``
+  `#6 <https://github.com/msoeken/alice/pull/6>`_
+
 v0.2 (May 7, 2018)
 ------------------
 

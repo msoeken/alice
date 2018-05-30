@@ -52,6 +52,11 @@ namespace alice
 */
 inline std::string ExistingFileWordExp( const std::string& filename )
 {
-  return CLI::ExistingFile( detail::word_exp_filename( filename ) );
+  std::string ret;
+  for ( const auto& name : detail::split( detail::word_exp_filename( filename ), " " ) )
+  {
+    ret += CLI::ExistingFile( name );
+  }
+  return ret;
 }
 }

@@ -12,6 +12,9 @@ v0.3 (not yet released)
 * General commands: Read multiple files in ``read``
   `#6 <https://github.com/msoeken/alice/pull/6>`_
 
+* Support for default store option (enabled via setting ``ALICE_SETTINGS_WITH_DEFAULT_OPTION``)
+  `#7 <https://github.com/msoeken/alice/pull/7>`_
+
 v0.2 (May 7, 2018)
 ------------------
 

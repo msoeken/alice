@@ -32,6 +32,7 @@ Welcome to alice's documentation!
    cli
    command
    environment
+   settings
    store
    validators
 

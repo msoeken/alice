@@ -12,6 +12,10 @@ Environment
    commands
    categories
    aliases
+   set_default_option
+   default_option
+   has_default_option
+   is_default_option
 
 .. doxygenclass:: alice::environment
    :members:

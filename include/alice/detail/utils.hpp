@@ -29,7 +29,9 @@
 
 #include <cstdio>
 #include <cstdlib>
+#ifndef _WIN32
 #include <wordexp.h>
+#endif
 
 #include <algorithm>
 #include <cctype>
@@ -238,6 +240,12 @@ inline std::string unescape_quotes( const std::string& s )
   return res;
 }
 
+#ifdef _WIN32
+inline const std::string& word_exp_filename( const std::string& filename )
+{
+  return filename;
+}
+#else
 inline std::string word_exp_filename( const std::string& filename )
 {
   std::string result;
@@ -258,6 +266,7 @@ inline std::string word_exp_filename( const std::string& filename )
 
   return result;
 }
+#endif
 } /* namespace detail */
 } /* namespace alice */
 

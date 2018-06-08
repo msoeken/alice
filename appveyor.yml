@@ -12,7 +12,7 @@ install:
   - git submodule update --init --recursive
 
 before_build:
-  - cmake -G "Visual Studio 15 2017 Win64" -DALICE_TEST=ON .
+  - cmake -G "Visual Studio 15 2017 Win64" -DALICE_TEST=ON -DPYTHON_EXECUTABLE=C:\\Python27-x64\\python.exe .
 
 build:
   project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln

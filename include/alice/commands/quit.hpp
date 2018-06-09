@@ -68,7 +68,6 @@ protected:
     osvi.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
 
     return nlohmann::json( {{"sysname", "Windows"},
-                            {"server", IsWindowsServer()},
                             {"majorversion", osvi.dwMajorVersion},
                             {"minorversion", osvi.dwMinorVersion},
                             {"supported_threads", static_cast<int>( std::thread::hardware_concurrency() )}} );

@@ -38,6 +38,7 @@
 
 #include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "../command.hpp"
 
@@ -172,7 +173,7 @@ private:
 };
 
 template<typename CLI>
-void create_python_module( const CLI& cli, py::module& m )
+void create_python_module( CLI& cli, py::module& m )
 {
   m.doc() = "Python bindings";
 
@@ -182,6 +183,9 @@ void create_python_module( const CLI& cli, py::module& m )
       .def( "__repr__", &return_value_dict::__repr__ )
       .def( "_repr_html_", &return_value_dict::_repr_html_ )
       .def( "dict", &return_value_dict::dict );
+
+  py::class_<CLI>( m, "CLI" )
+      .def( "run", &CLI::run );
 
   for ( const auto& p : cli.env->commands() )
   {

@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include <unistd.h>
+
 #include <cstdlib>
 #include <cstdio>
 #include <string>
@@ -113,7 +115,15 @@ private:
       {
         if ( !is_set( "filename" ) )
         {
+#if _WIN32
           filename = fmt::format( "{}.{}", std::tmpnam( nullptr ), extensions.at( option ) );
+#else
+          char* tmpname = new char[18 + extensions.at( option ).size()];
+          sprintf( tmpname, "/tmp/aliceXXXXXX.%s", extensions.at( option ).c_str() );
+          mkstemps( tmpname, extensions.at( option ).size() + 1 );
+          filename = tmpname;
+          delete[] tmpname;
+#endif
         }
 
         std::ofstream os( filename.c_str(), std::ofstream::out );

@@ -184,9 +184,6 @@ void create_python_module( CLI& cli, py::module& m )
       .def( "_repr_html_", &return_value_dict::_repr_html_ )
       .def( "dict", &return_value_dict::dict );
 
-  py::class_<CLI>( m, "CLI" )
-      .def( "run", &CLI::run );
-
   for ( const auto& p : cli.env->commands() )
   {
     m.def( p.first.c_str(), [p]( py::kwargs kwargs ) -> py::object {

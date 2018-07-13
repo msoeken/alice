@@ -20,12 +20,13 @@ Otherwise, make sure to define ``READLINE_USE_READLINE`` and link against
 Building examples
 -----------------
 
-Examples are enabled by default.  In order to build them, run the
-following from the base directory of alice::
+In order to build the examples, you need to enable them. Run the following from
+the base directory of alice::
 
+  git submodule update --init --recursive
   mkdir build
   cd build
-  cmake ..
+  cmake -DALICE_EXAMPLES=ON ..
   make
 
 Building tests
@@ -34,6 +35,7 @@ Building tests
 In order to run the tests and the micro benchmarks, you need to enable tests in
 CMake::
 
+  git submodule update --init --recursive
   mkdir build
   cd build
   cmake -DALICE_TEST=ON ..

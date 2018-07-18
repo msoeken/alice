@@ -15,6 +15,9 @@ v0.3 (not yet released)
 * Support for default store option (enabled via setting ``ALICE_SETTINGS_WITH_DEFAULT_OPTION``)
   `#7 <https://github.com/msoeken/alice/pull/7>`_
 
+* General commands: ``store --pop`` to remove current store element
+  `#8 <https://github.com/msoeken/alice/pull/8>`_
+
 v0.2 (May 7, 2018)
 ------------------
 

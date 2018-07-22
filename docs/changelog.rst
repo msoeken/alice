@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-v0.3 (not yet released)
------------------------
+v0.3 (July 22, 2018)
+--------------------
 
 * Throw and catch errors in `read`.
 
@@ -17,6 +17,9 @@ v0.3 (not yet released)
 
 * General commands: ``store --pop`` to remove current store element
   `#8 <https://github.com/msoeken/alice/pull/8>`_
+
+* Automatic ``to_<tag>`` in Python interface as shortcut for ``write_<tag>(log=True)["contents"]``
+  `#9 <https://github.com/msoeken/alice/pull/9>`_
 
 v0.2 (May 7, 2018)
 ------------------

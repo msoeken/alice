@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+v0.4 (not yet released)
+-----------------------
+
+* General commands: ``help --docs`` to generate documentation of all commands
+  `#10 <https://github.com/msoeken/alice/pull/10>`_
+
 v0.3 (July 22, 2018)
 --------------------
 

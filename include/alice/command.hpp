@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <any>
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -40,7 +41,6 @@
 #include <vector>
 
 #include <CLI11.hpp>
-#include <any.hpp>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
@@ -450,7 +450,7 @@ public:
   {
     const auto index = options.size();
     options.push_back( T() );
-    auto opt = opts.add_option( name, linb::any_cast<T&>( options.back() ), description );
+    auto opt = opts.add_option( name, std::any_cast<T&>( options.back() ), description );
 
     for ( const auto& name : detail::split( opt->get_name(), "," ) )
     {
@@ -483,8 +483,8 @@ public:
     }
     else
     {
-      const linb::any& a = options.at( it->second );
-      return *linb::any_cast<T>( &a );
+      const std::any& a = options.at( it->second );
+      return *std::any_cast<T>( &a );
     }
   }
 
@@ -597,7 +597,7 @@ public:
 
 private:
   std::string scaption;
-  std::vector<linb::any> options;
+  std::vector<std::any> options;
   std::unordered_map<std::string, unsigned> option_index;
 
 private:

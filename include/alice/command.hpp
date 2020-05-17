@@ -532,6 +532,12 @@ public:
     return env->store<T>();
   }
 
+  template<typename T>
+  void set_default_store()
+  {
+    env->set_default_option( store_info<T>::option );
+  }
+
 /* A small hack to get the Python bindings to work */
 #if defined ALICE_PYTHON || defined ALICE_CINTERFACE
 public:

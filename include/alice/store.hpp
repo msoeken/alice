@@ -154,10 +154,11 @@ public:
 
     The current element is set to the added store element.
   */
-  T& extend()
+  template<class... Args>
+  T& extend(Args... args)
   {
     _current = _data.size();
-    _data.push_back( T() );
+    _data.push_back( T(std::forward<Args>( args )...) );
     return _data.back();
   }
 

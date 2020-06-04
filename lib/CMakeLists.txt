@@ -1,14 +1,15 @@
 add_subdirectory(pybind11 EXCLUDE_FROM_ALL)
 
-add_library(alice_any INTERFACE)
-target_include_directories(alice_any INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/any)
-
 add_library(alice_cli11 INTERFACE) # v1.3
 target_include_directories(alice_cli11 INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/cli11)
 
-add_library(alice_fmt INTERFACE) # v5.3.0
-target_include_directories(alice_fmt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/fmt)
-target_compile_definitions(alice_fmt INTERFACE FMT_HEADER_ONLY)
+if (NOT TARGET fmt)
+  add_library(fmt INTERFACE) # v6.2.1
+  target_include_directories(fmt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/fmt)
+  target_compile_definitions(fmt INTERFACE FMT_HEADER_ONLY)
+endif()
 
-add_library(alice_json INTERFACE) # v3.5.0
-target_include_directories(alice_json INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/json)
+if (NOT TARGET json)
+  add_library(json INTERFACE) # v3.7.3
+  target_include_directories(json INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/json)
+endif()

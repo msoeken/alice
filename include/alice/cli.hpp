@@ -242,6 +242,10 @@ public:
           break;
         }
       }
+
+      // cleanup to prevent memory leak
+      env->_categories.clear();
+      env->_commands.clear();
     }
     else if ( opts->count( "-f" ) )
     {

@@ -1123,7 +1123,7 @@ class Option : public OptionBase<Option> {
     }
 
     /// Sets required options
-    Option *requires(Option *opt) {
+    Option *requires_option(Option *opt) {
         auto tup = requires_.insert(opt);
         if(!tup.second)
             throw OptionAlreadyAdded::Requires(get_name(), opt->get_name());
@@ -1131,17 +1131,17 @@ class Option : public OptionBase<Option> {
     }
 
     /// Can find a string if needed
-    template <typename T = App> Option *requires(std::string opt_name) {
+    template <typename T = App> Option *requires_option(std::string opt_name) {
         for(const Option_p &opt : dynamic_cast<T *>(parent_)->options_)
             if(opt.get() != this && opt->check_name(opt_name))
-                return requires(opt.get());
+                return requires_option(opt.get());
         throw IncorrectConstruction::MissingOption(opt_name);
     }
 
     /// Any number supported, any mix of string and Opt
-    template <typename A, typename B, typename... ARG> Option *requires(A opt, B opt1, ARG... args) {
-        requires(opt);
-        return requires(opt1, args...);
+    template <typename A, typename B, typename... ARG> Option *requires_option(A opt, B opt1, ARG... args) {
+        requires_option(opt);
+        return requires_option(opt1, args...);
     }
 
     /// Sets excluded options

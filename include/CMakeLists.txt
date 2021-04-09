@@ -1,6 +1,6 @@
 # library for stand-alone executables
 add_library(alice INTERFACE)
-target_include_directories(alice INTERFACE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(alice SYSTEM INTERFACE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(alice INTERFACE alice_cli11)
 target_link_libraries(alice INTERFACE fmt)
 target_link_libraries(alice INTERFACE json)

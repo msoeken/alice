@@ -7,7 +7,7 @@ endif()
 file(GLOB FILENAMES *.cpp)
 
 add_executable(run_tests ${FILENAMES})
-target_link_libraries(run_tests alice)
+target_link_libraries(run_tests PUBLIC alice)
 target_compile_definitions(run_tests PRIVATE ALICE_NOAPI)
 
 include(CheckCXXCompilerFlag)

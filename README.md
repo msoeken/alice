@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/msoeken/alice.svg?branch=master)](https://travis-ci.org/msoeken/alice)
-[![Build Status](https://ci.appveyor.com/api/projects/status/qc2kuc85jaxqu5gh?svg=true)](https://ci.appveyor.com/project/msoeken/alice)
+[![Build status](https://ci.appveyor.com/api/projects/status/ltos6dl3bm80q43h?svg=true)](https://ci.appveyor.com/project/wjrforcyber/alice)
 [![Documentation Status](https://readthedocs.org/projects/alice-fix-doc-build/badge/?version=latest)](https://alice-fix-doc-build.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

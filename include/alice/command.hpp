@@ -150,6 +150,15 @@ public:
     return _aliases;
   }
 
+  /*! \brief Returns a map of variables
+
+    Keys are the variables identifiers.
+  */
+  inline const std::unordered_map<std::string, std::string>& variables() const
+  {
+    return _variables;
+  }
+
   /*! \brief Get environment variable
 
     Finds an environment variable or returns a default value. Variables can be
